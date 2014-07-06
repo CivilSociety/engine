@@ -1,0 +1,15 @@
+# compiled output
+/dist
+
+# dependencies
+/node_modules
+/frontend/node_modules
+/vendor/*
+
+# misc
+.vagrant
+Vagrantfile
+.DS_Store
+.idea
+Thumbs.db
+npm-debug.log
