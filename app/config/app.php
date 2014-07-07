@@ -26,7 +26,7 @@ return array(
 	|
 	*/
 
-	'url' => 'http://localhost',
+	'url' => 'http://localhost:8080',
 	'lon' => 55.01,
 	'lat' => 59.004,
 	'zoom' => 13,

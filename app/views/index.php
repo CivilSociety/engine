@@ -11,6 +11,8 @@
 		var app = angular.module('civil', ['ui.router', 'restangular', 'ngStorage']);
 
 		app.run().constant('config', {
+			name: 'Civil society',
+			resctictions: [[52.89112, 35.911224], [53.062703, 36.215065]],
 			url: '<?php print_r(Config::get('app.url'));?>/',
 			apiUrl: '<?php print_r(Config::get('app.url'));?>/',
 			lon: <?php print_r(Config::get('app.lon'));?>,

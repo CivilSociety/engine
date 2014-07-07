@@ -3,11 +3,15 @@
 
 angular.module('civil').controller('mapController', [
 'config',
-function(config) {
+'$rootScope',
+function(config, $rootScope) {
+	console.log(config);
 	var map = L.map('map', {
 		center: [config.lon, config.lat],
-		zoom: config.zoom
+		zoom: config.zoom,
+		maxBounds: config.restrictions
 	});
+
 	var currentMarker;
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a rel="nofollow" href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -25,6 +29,10 @@ function(config) {
 		currentMarker.getPopup().on('close', function() {
 			currentMarker.setOpacity(0);
 		});
+	});
+
+	$rootScope.$on('moveMap', function(e, place) {	
+		map.panTo(place.latlng.split(';'));
 	});
 }
 ]);

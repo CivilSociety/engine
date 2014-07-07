@@ -5,7 +5,9 @@ angular.module('civil').controller('SidebarController', [
 'config',
 '$scope',
 'Places',
-function(config, $scope, Places) {
+'$rootScope',
+function(config, $scope, Places, $rootScope) {
+	$scope.name = config.name;
 	$scope.places = Places.getList().$object;
 	$scope.isDetailedViewHidden = true;
 	$scope.isLogoHidden = false;

@@ -1,9 +1,10 @@
 <div id="map"></div>
 <div class="sidebar" ng-controller="SidebarController">
-	<div class="simple-view" ng-hide="isLogoHidden" ng-click="showDetails()">CivilSociety</div>
+	<div class="simple-view" ng-hide="isLogoHidden" ng-click="showDetails()">{{name}}</div>
   <div class="detailed-view-bookmark" ng-show="isDetailedViewHidden" ng-mouseover="showDetails()"></div>
-	<div class="detailed-view" ng-hide="isDetailedViewHidden" ng-mouseout="hideDetails()">
-		details
+	<div class="detailed-view" ng-hide="isDetailedViewHidden" ng-mouseleave="hideDetails()">
+    <div class="logo">{{name}}</div>
+		<place ng-repeat="place in places"></place>
 	</div>
 </div>
 
