@@ -25,7 +25,6 @@ angular.module('civil').controller('mapController', [
 'config',
 '$rootScope',
 function(config, $rootScope) {
-	console.log(config);
 	var map = L.map('map', {
 		center: [config.lon, config.lat],
 		zoom: config.zoom,
