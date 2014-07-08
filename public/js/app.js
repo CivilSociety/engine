@@ -27,15 +27,15 @@ angular.module('civil').controller('mapController', [
 function(config, $rootScope) {
 	var map = L.map('map', {
 		center: [config.lon, config.lat],
-		zoom: config.zoom,
-		maxBounds: config.restrictions
+		zoom: config.zoom
 	});
 
 	var currentMarker;
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a rel="nofollow" href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 	}).addTo(map);
-
+	map.fitBounds(config.resctictions);
+	map.setMaxBounds(config.resctictions);
 	map.on('click', function(e) {
 		if (!currentMarker) {
 			currentMarker = L.marker(e.latlng).addTo(map);			
