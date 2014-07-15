@@ -9,7 +9,7 @@
 </div>
 
 <script type="text/template" id="creation-form">
-<form class="form-horizontal">
+<form class="form-horizontal" ng-controller="SavePlaceController">
 <fieldset>
 
 <!-- Form Name -->
@@ -19,8 +19,7 @@
 <div class="form-group">
   <label class="col-md-3 control-label" for="name">Ваше имя</label>  
   <div class="col-md-8">
-  <input id="name" name="name" type="text" placeholder="" class="form-control input-md">
-    
+  <input id="name" name="name" ng-model="place.name" type="text" placeholder="" class="form-control input-md">
   </div>
 </div>
 
@@ -28,7 +27,7 @@
 <div class="form-group">
   <label class="col-md-3 control-label" for="place">Опишите место</label>  
   <div class="col-md-8">
-  <input id="place" name="place" type="text" placeholder="" class="form-control input-md">
+  <input id="place" name="place" ng-model="place.description" type="text" placeholder="" class="form-control input-md">
     
   </div>
 </div>
@@ -37,18 +36,25 @@
 <div class="form-group">
   <label class="col-md-3 control-label" for="improvement">Опишите проблему</label>
   <div class="col-md-8">                     
-    <textarea class="form-control" id="improvement" name="improvement"></textarea>
+    <textarea class="form-control" ng-model="place.improvement" id="improvement" name="improvement"></textarea>
   </div>
 </div>
 
 <!-- Button -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="save"></label>
   <div class="col-md-4">
-    <button id="save" name="save" class="btn btn-primary">Сохранить</button>
+    <button class="btn btn-primary" ng-click="save()">Сохранить</button>
   </div>
 </div>
 
 </fieldset>
-</form>
 </script>
+<script type="text/temaplate" id="place-doc">
+<div>
+Место: {{place.name}} ({{place.description}})<br>
+Проблема: {{place.improvement}}<br>
+Голосов: {{place.votes}}<br>
+<button ng-show="canVote" ng-click="vote(place)">Голосовать</button>
+</div>
+</script>
+</div>
