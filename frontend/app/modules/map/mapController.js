@@ -13,6 +13,7 @@ function(config, $rootScope, $scope, $compile, Places) {
 		zoom: config.zoom
 	});
 	var currentMarker;
+	var markers = [];
 	$scope.place = {};
 
 	Places.getList().then(function(data) {
@@ -22,28 +23,45 @@ function(config, $rootScope, $scope, $compile, Places) {
 	function drawMarker(place) {
 		var linkFunction = $compile(angular.element(document.getElementById('place-doc').innerHTML));
 		var newScope = $scope.$new();
+		var options = {
+			color: 'green',
+			fillOpacity: 0.5,
+			radius: 15
+		};
+		var votes = window.localStorage.votes || '';
+		votes = votes.split(',');
 		newScope.place = place;
-		var votes = window.localStorage.getItem('votes');
-		newScope.canVote = !(votes && votes.indexOf(place.id) != -1);
+		newScope.canVote = (votes.indexOf(place.id) === -1);
 
 		newScope.vote = function(p) {
-			if (typeof window.localStorage.getItem('votes') != 'Object') {
-				window.localStorage.setItem('votes', [p.id]);
-			} else {
-				window.localStorage.getItem('votes').push(p.id);
-			}
-			Places.get(p.id).customPUT('vote').then(function() {
+			//debugger;
+			var votes = window.localStorage.votes || '';
+			votes = votes.split(',') || [];
+			if (votes.indexOf(place.id) !== -1)  return;
+			votes[votes.length] = place.id;
+			window.localStorage.votes = votes.join(',');
+			Places.one(p.id).customPUT({}, 'vote').then(function() {
+				p.votes++;
 				newScope.canVote = false;
 			});
 		}
-
-		L.circleMarker(place.latlng.split(';')).bindPopup(linkFunction(newScope)[0]).addTo(map);
+		var marker = L.circleMarker(place.latlng.split(';'), options);
+		marker.placeId = place.id;
+		marker.on('mouseover', function() {
+			marker.setStyle({fillOpacity: 1});
+		});
+		marker.on('mouseout', function() {
+			marker.setStyle({fillOpacity: 0.5});
+		});
+		marker.bindPopup(linkFunction(newScope)[0]).addTo(map);
+		markers.push(marker);
 	}
 	
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a rel="nofollow" href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 	}).addTo(map);
 	map.setMaxBounds(config.resctictions);	
+
 	map.on('click', function(e) {
 		if (!currentMarker) {
 			currentMarker = L.marker(e.latlng).addTo(map);			
@@ -63,6 +81,18 @@ function(config, $rootScope, $scope, $compile, Places) {
 
 	$rootScope.$on('moveMap', function(e, place) {	
 		map.panTo(place.latlng.split(';'));
+		markers.forEach(function(m) {
+			if (m.placeId === place.id) {
+				m.openPopup();
+			}
+		});
+	});
+
+	$rootScope.$on('placeAdded', function(e, place) {
+		drawMarker(place);
+		$rootScope.places.push(place);
+		currentMarker.closePopup();
+		currentMarker.setOpacity(0);
 	});
 }
 ]);

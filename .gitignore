@@ -1,11 +1,3 @@
-# compiled output
-/dist
-
-# dependencies
-/node_modules
-/frontend/node_modules
-/vendor/*
-
 # misc
 .vagrant
 Vagrantfile

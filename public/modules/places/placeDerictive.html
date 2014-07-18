@@ -1,3 +1,8 @@
 <div class="one-place-directive" ng-click="moveMap(place)">
-{{place.name}} <span class="label label-primary">{{place.votes}}</span>
+<h4>{{place.description}} ({{place.votes}} голосов)</h4>
+<div class="improvement">{{place.improvement}}</div>
+<div class="meta-data">
+	<span class="name">{{place.name}}</span>
+	<span class="date">{{place.date}}</span>
+</div>
 </div>

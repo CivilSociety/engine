@@ -3,7 +3,6 @@
 	<div class="simple-view" ng-hide="isLogoHidden" ng-click="showDetails()">{{name}}</div>
   <div class="detailed-view-bookmark" ng-show="isDetailedViewHidden" ng-mouseover="showDetails()"></div>
 	<div class="detailed-view" ng-hide="isDetailedViewHidden" ng-mouseleave="hideDetails()">
-    <div class="logo">{{name}}</div>
 		<place ng-repeat="place in places"></place>
 	</div>
 </div>
@@ -28,14 +27,13 @@
   <label class="col-md-3 control-label" for="place">Опишите место</label>  
   <div class="col-md-8">
   <input id="place" name="place" ng-model="place.description" type="text" placeholder="" class="form-control input-md">
-    
   </div>
 </div>
 
 <!-- Textarea -->
 <div class="form-group">
   <label class="col-md-3 control-label" for="improvement">Опишите проблему</label>
-  <div class="col-md-8">                     
+  <div class="col-md-8">
     <textarea class="form-control" ng-model="place.improvement" id="improvement" name="improvement"></textarea>
   </div>
 </div>
@@ -53,7 +51,6 @@
 <div>
 Место: {{place.name}} ({{place.description}})<br>
 Проблема: {{place.improvement}}<br>
-Голосов: {{place.votes}}<br>
 <button ng-show="canVote" ng-click="vote(place)">Голосовать</button>
 </div>
 </script>
