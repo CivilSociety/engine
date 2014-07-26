@@ -159,7 +159,8 @@ function(config, $rootScope, $scope, $compile, Places) {
 
 	$rootScope.$on('placeAdded', function(e, place) {
 		drawMarker(place);
-		$rootScope.places.push(place);
+		place.votes = 0;
+		$rootScope.places.unshift(place);
 		currentMarker.closePopup();
 		currentMarker.setOpacity(0);
 	});
