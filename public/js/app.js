@@ -52,6 +52,13 @@ function(config, $rootScope, $scope, $compile, Places) {
 	});
 	var currentMarker;
 	var markers = [];
+	var selectionOptions = {
+		fill: false,
+		opacity: 0,
+		weight: 3,
+		color: 'darkgreen'
+	};
+	var selection = L.circleMarker([50.5, 30.5], selectionOptions).addTo(map);
 	$scope.place = {};
 
 	Places.getList().then(function(data) {
@@ -61,10 +68,20 @@ function(config, $rootScope, $scope, $compile, Places) {
 	function drawMarker(place) {
 		var linkFunction = $compile(angular.element(document.getElementById('place-doc').innerHTML));
 		var newScope = $scope.$new();
+		var radius = 5;
+		var dr = 2;
+		var maxRadius = 30;
+		var latlng = place.latlng.split(';');
+		if (place.votes > 0) {
+			radius += dr * place.votes;
+		}
+		if (radius > maxRadius) {
+			radius = maxRadius;
+		}
 		var options = {
 			color: 'green',
-			fillOpacity: 0.5,
-			radius: 15
+			fillOpacity: 1,
+			radius: radius
 		};
 		var votes = window.localStorage.votes || '';
 		votes = votes.split(',');
@@ -72,7 +89,6 @@ function(config, $rootScope, $scope, $compile, Places) {
 		newScope.canVote = (votes.indexOf(place.id) === -1);
 
 		newScope.vote = function(p) {
-			//debugger;
 			var votes = window.localStorage.votes || '';
 			votes = votes.split(',') || [];
 			if (votes.indexOf(place.id) !== -1)  return;
@@ -83,20 +99,26 @@ function(config, $rootScope, $scope, $compile, Places) {
 				newScope.canVote = false;
 			});
 		}
-		var marker = L.circleMarker(place.latlng.split(';'), options);
+		var marker = L.circleMarker(latlng, options);
 		marker.placeId = place.id;
 		marker.on('mouseover', function() {
-			marker.setStyle({fillOpacity: 1});
+			var point = map.latLngToLayerPoint(marker.getLatLng()); 
+			marker.setStyle({color: 'darkgreen'});
+			selection.setLatLng(marker.getLatLng())
+				.setRadius(marker.getRadius() + 10)
+				.setStyle({opacity: 1});
+			showTooltip(point, place.description, marker.getRadius());
 		});
 		marker.on('mouseout', function() {
-			marker.setStyle({fillOpacity: 0.5});
+			marker.setStyle({color: 'green'});
+			selection.setStyle({opacity: 0});
+			hideTooltip();
 		});
 		marker.bindPopup(linkFunction(newScope)[0]).addTo(map);
 		markers.push(marker);
 
 
 		var placeId = getParameterByName('place_id');
-		console.log(placeId)
 		if (placeId && placeId === place.id) {
 			$rootScope.$broadcast('moveMap', place);
 		}
@@ -141,6 +163,18 @@ function(config, $rootScope, $scope, $compile, Places) {
 	});
 }
 ]);
+
+function showTooltip(coords, text, radius) {
+	var tooltip = document.getElementById('place-tooltip');
+	tooltip.style.left = coords.x + radius + 30 + 'px';
+	tooltip.innerHTML = text;
+	tooltip.style.display = 'block';
+	tooltip.style.top = coords.y  - tooltip.offsetHeight/2 + 'px';
+}
+function hideTooltip() {
+	var tooltip = document.getElementById('place-tooltip');
+	tooltip.style.display = 'none';
+}
 
 function getParameterByName(name) {
     var hash = location.hash;

@@ -65,6 +65,35 @@ body {
 .place-dialog button {
   margin-top: 15px;
 }
+#place-tooltip {
+  position: absolute;
+  background: #006400;
+  color: #fff;
+  padding: 10px;
+  display: none;
+  z-index: 1000;
+}
+#place-tooltip:after,
+#place-tooltip:before {
+  right: 100%;
+  top: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+#place-tooltip:after {
+  border-color: rgba(0,0,0,0);
+  border-right-color: #006400;
+  border-width: 10px;
+  margin-top: -10px;
+}
+#place-tooltip:before {
+  border-width: 13px;
+  margin-top: -13px;
+}
 
 .one-place-directive {
   border-bottom: 2px solid #c0c0c0;
