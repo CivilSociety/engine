@@ -1,10 +1,12 @@
 <div id="map"></div>
-<div class="sidebar" ng-controller="SidebarController">
-	<div class="simple-view" ng-hide="isLogoHidden" ng-click="showDetails()">{{name}}</div>
-  <div class="detailed-view-bookmark" ng-show="isDetailedViewHidden" ng-mouseover="showDetails()"></div>
-	<div class="detailed-view list-group" ng-hide="isDetailedViewHidden" ng-mouseleave="hideDetails()">
+<div ng-controller="SidebarController"  class="sidebar">
+<div class="simple-view" ng-hide="isLogoHidden" ng-click="showDetails()">{{name}}</div>
+<div class="detailed-view-bookmark" ng-show="isDetailedViewHidden" ng-mouseover="showDetails()"></div>
+<div ng-hide="isDetailedViewHidden">
+	<div class="detailed-view list-group" ng-mouseleave="hideDetails()">
 		<place ng-repeat="place in places"></place>
 	</div>
+</div>
 </div>
 <div id="place-tooltip">
 </div>
