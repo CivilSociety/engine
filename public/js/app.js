@@ -18,6 +18,24 @@ function ($stateProvider, $urlRouterProvider, RestangularProvider, config) {
 ]);
 
 })();
+(function() {
+	angular.module('civil').directive('hoverClass', function () {
+    return {
+        restrict: 'A',
+        scope: {
+            hoverClass: '@'
+        },
+        link: function (scope, element) {
+            element.on('mouseenter', function() {
+                element.addClass(scope.hoverClass);
+            });
+            element.on('mouseleave', function() {
+                element.removeClass(scope.hoverClass);
+            });
+        }
+    };
+})
+})();
 ;(function() {
 'use strict';
 
@@ -75,6 +93,13 @@ function(config, $rootScope, $scope, $compile, Places) {
 		});
 		marker.bindPopup(linkFunction(newScope)[0]).addTo(map);
 		markers.push(marker);
+
+
+		var placeId = getParameterByName('place_id');
+		console.log(placeId)
+		if (placeId && placeId === place.id) {
+			$rootScope.$broadcast('moveMap', place);
+		}
 	}
 	
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -117,6 +142,16 @@ function(config, $rootScope, $scope, $compile, Places) {
 }
 ]);
 
+function getParameterByName(name) {
+    var hash = location.hash;
+    if (hash.indexOf('?') === -1) return null;
+    var params = {};
+    hash.split('?').slice(1).pop().split('&').forEach(function(s) {
+    	var pair = s.split('=');
+    	params[pair[0]] = pair[1];
+    });
+    return params[name];
+}
 })();
 ;(function() {
 'use strict';

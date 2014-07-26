@@ -3,7 +3,7 @@
 class PlacesController extends \BaseController {
 
 	public function index() {
-		return Response::json(Place::all());
+		return Response::json(Place::orderBy('created_at', 'desc')->get());
 	}
 
 	public function show($id) {

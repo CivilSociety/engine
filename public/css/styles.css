@@ -58,6 +58,13 @@ body {
   width: 100%;
   z-index: 10;
 }
+.place-dialog {
+  padding: 10px;
+  font-size: 1.5rem;
+}
+.place-dialog button {
+  margin-top: 15px;
+}
 
 .one-place-directive {
   border-bottom: 2px solid #c0c0c0;
@@ -74,6 +81,7 @@ body {
 .one-place-directive .meta-data span {
   margin-right: 3em;
 }
-.one-place-directive:hover {
-  background: #c0c0c0;
+.one-place-directive.active {
+  background-color: #c0c0c0 !important;
+  border: #c0c0c0;
 }

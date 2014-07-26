@@ -55,6 +55,13 @@ function(config, $rootScope, $scope, $compile, Places) {
 		});
 		marker.bindPopup(linkFunction(newScope)[0]).addTo(map);
 		markers.push(marker);
+
+
+		var placeId = getParameterByName('place_id');
+		console.log(placeId)
+		if (placeId && placeId === place.id) {
+			$rootScope.$broadcast('moveMap', place);
+		}
 	}
 	
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -97,4 +104,14 @@ function(config, $rootScope, $scope, $compile, Places) {
 }
 ]);
 
+function getParameterByName(name) {
+    var hash = location.hash;
+    if (hash.indexOf('?') === -1) return null;
+    var params = {};
+    hash.split('?').slice(1).pop().split('&').forEach(function(s) {
+    	var pair = s.split('=');
+    	params[pair[0]] = pair[1];
+    });
+    return params[name];
+}
 })();

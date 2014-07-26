@@ -2,7 +2,7 @@
 <div class="sidebar" ng-controller="SidebarController">
 	<div class="simple-view" ng-hide="isLogoHidden" ng-click="showDetails()">{{name}}</div>
   <div class="detailed-view-bookmark" ng-show="isDetailedViewHidden" ng-mouseover="showDetails()"></div>
-	<div class="detailed-view" ng-hide="isDetailedViewHidden" ng-mouseleave="hideDetails()">
+	<div class="detailed-view list-group" ng-hide="isDetailedViewHidden" ng-mouseleave="hideDetails()">
 		<place ng-repeat="place in places"></place>
 	</div>
 </div>
@@ -48,10 +48,13 @@
 </fieldset>
 </script>
 <script type="text/temaplate" id="place-doc">
-<div>
+<div class="place-dialog">
 Место: {{place.name}} ({{place.description}})<br>
 Проблема: {{place.improvement}}<br>
-<button ng-show="canVote" ng-click="vote(place)">Голосовать</button>
+<button class="btn btn-primary" ng-show="canVote" ng-click="vote(place)">
+Отличная идея
+<i class="glyphicon glyphicon-thumbs-up"></i>
+</button>
 </div>
 </script>
 </div>

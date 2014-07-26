@@ -1,8 +1,10 @@
-<div class="one-place-directive" ng-click="moveMap(place)">
-<h4>{{place.description}} ({{place.votes}} голосов)</h4>
-<div class="improvement">{{place.improvement}}</div>
-<div class="meta-data">
-	<span class="name">{{place.name}}</span>
-	<span class="date">{{place.date}}</span>
-</div>
+<div class="one-place-directive list-group-item" ng-click="moveMap(place)" hover-class="active">
+<h4 class="list-group-item-heading">{{place.description}} ({{place.votes}} голосов)</h4>
+<p class="list-group-item-text">
+	<div class="improvement">{{place.improvement}}</div>
+	<div class="meta-data">
+		<span class="name">{{place.name}}</span>
+		<span class="date">{{place.date}}</span>
+	</div>
+</p>
 </div>

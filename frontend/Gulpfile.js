@@ -6,7 +6,8 @@ var gulp = require('gulp'),
 
 var JS_DEST = '../public/js/',
 	CSS_DEST = '../public/css/',
-	PUBLIC_DEST = '../public/';
+	PUBLIC_DEST = '../public/',
+	FONTS_DEST = '../public/fonts/';
 
 gulp.task('scripts.app', function () {
 	return gulp.src('app/**/*.js')
@@ -48,7 +49,7 @@ gulp.task('copypublic', function () {
 });
 
 gulp.task('fonts', function() {
-	return gulp.src('vendor/bootstrap/dist/fonts/*').pipe(gulp.dest(PUBLIC_DEST));
+	return gulp.src('vendor/bootstrap/dist/fonts/*').pipe(gulp.dest(FONTS_DEST));
 });
 
 gulp.task('watch', function () {
