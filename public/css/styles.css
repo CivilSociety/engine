@@ -50,6 +50,7 @@ body {
   background: #fff;
   width: 30rem;
   z-index: 23;
+  overflow: auto;
 }
 
 #map {

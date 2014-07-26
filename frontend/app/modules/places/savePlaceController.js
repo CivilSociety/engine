@@ -6,6 +6,7 @@ angular.module('civil').controller('SavePlaceController', [
 function($scope, $rootScope, Places) {
 	$scope.save = function() {
 		$scope.place.latlng = [$scope.latlng.lat, $scope.latlng.lng].join(';');
+		$scope.place.votes = 0;
 		Places.post($scope.place).then(function(place) {
 			$rootScope.$broadcast('placeAdded', place);
 		});
