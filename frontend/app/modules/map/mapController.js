@@ -65,7 +65,7 @@ function(config, $rootScope, $scope, $compile, Places) {
 		var marker = L.circleMarker(latlng, options);
 		marker.placeId = place.id;
 		marker.on('mouseover', function() {
-			var point = map.latLngToLayerPoint(marker.getLatLng()); 
+			var point = map.latLngToContainerPoint(marker.getLatLng());
 			marker.setStyle({color: 'darkgreen'});
 			selection.setLatLng(marker.getLatLng())
 				.setRadius(marker.getRadius() + 10)
