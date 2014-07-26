@@ -47,6 +47,7 @@ function(config, $rootScope, $scope, $compile, Places) {
 		};
 		var votes = window.localStorage.votes || '';
 		votes = votes.split(',');
+		place.date = moment(place.created_at).format('DD.MM.YYYY');
 		newScope.place = place;
 		newScope.canVote = (votes.indexOf(place.id) === -1);
 
@@ -92,6 +93,7 @@ function(config, $rootScope, $scope, $compile, Places) {
 	map.setMaxBounds(config.resctictions);	
 
 	map.on('click', function(e) {
+		hideTooltip();
 		if (!currentMarker) {
 			currentMarker = L.marker(e.latlng).addTo(map);			
 		} else {

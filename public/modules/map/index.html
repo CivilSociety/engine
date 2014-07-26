@@ -51,8 +51,9 @@
 </script>
 <script type="text/temaplate" id="place-doc">
 <div class="place-dialog">
-Место: {{place.name}} ({{place.description}})<br>
-Проблема: {{place.improvement}}<br>
+<h4>{{place.description}} ({{place.votes}})</h4>
+{{place.improvement}}<br>
+{{place.name}} {{place.date}}
 <button class="btn btn-primary" ng-show="canVote" ng-click="vote(place)">
 Отличная идея
 <i class="glyphicon glyphicon-thumbs-up"></i>
