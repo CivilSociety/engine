@@ -18,24 +18,6 @@ function ($stateProvider, $urlRouterProvider, RestangularProvider, config) {
 ]);
 
 })();
-(function() {
-	angular.module('civil').directive('hoverClass', function () {
-    return {
-        restrict: 'A',
-        scope: {
-            hoverClass: '@'
-        },
-        link: function (scope, element) {
-            element.on('mouseenter', function() {
-                element.addClass(scope.hoverClass);
-            });
-            element.on('mouseleave', function() {
-                element.removeClass(scope.hoverClass);
-            });
-        }
-    };
-})
-})();
 ;(function() {
 'use strict';
 
@@ -221,6 +203,24 @@ function(config, $scope, Places, $rootScope) {
 }
 ]);
 
+})();
+(function() {
+	angular.module('civil').directive('hoverClass', function () {
+    return {
+        restrict: 'A',
+        scope: {
+            hoverClass: '@'
+        },
+        link: function (scope, element) {
+            element.on('mouseenter', function() {
+                element.addClass(scope.hoverClass);
+            });
+            element.on('mouseleave', function() {
+                element.removeClass(scope.hoverClass);
+            });
+        }
+    };
+})
 })();
 (function() {
 	angular.module('civil').directive('place', [
