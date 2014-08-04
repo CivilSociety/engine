@@ -10,7 +10,8 @@ angular.module('civil').controller('mapController', [
 function(config, $rootScope, $scope, $compile, Places) {
 	var map = L.map('map', {
 		center: [config.lat, config.lon],
-		zoom: config.zoom
+		zoom: config.zoom,
+		minZoom: 10
 	});
 	var currentMarker;
 	var markers = [];

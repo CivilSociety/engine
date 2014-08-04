@@ -18,6 +18,24 @@ function ($stateProvider, $urlRouterProvider, RestangularProvider, config) {
 ]);
 
 })();
+(function() {
+	angular.module('civil').directive('hoverClass', function () {
+    return {
+        restrict: 'A',
+        scope: {
+            hoverClass: '@'
+        },
+        link: function (scope, element) {
+            element.on('mouseenter', function() {
+                element.addClass(scope.hoverClass);
+            });
+            element.on('mouseleave', function() {
+                element.removeClass(scope.hoverClass);
+            });
+        }
+    };
+})
+})();
 ;(function() {
 'use strict';
 
@@ -30,7 +48,8 @@ angular.module('civil').controller('mapController', [
 function(config, $rootScope, $scope, $compile, Places) {
 	var map = L.map('map', {
 		center: [config.lat, config.lon],
-		zoom: config.zoom
+		zoom: config.zoom,
+		minZoom: 10
 	});
 	var currentMarker;
 	var markers = [];
@@ -205,24 +224,6 @@ function(config, $scope, Places, $rootScope) {
 
 })();
 (function() {
-	angular.module('civil').directive('hoverClass', function () {
-    return {
-        restrict: 'A',
-        scope: {
-            hoverClass: '@'
-        },
-        link: function (scope, element) {
-            element.on('mouseenter', function() {
-                element.addClass(scope.hoverClass);
-            });
-            element.on('mouseleave', function() {
-                element.removeClass(scope.hoverClass);
-            });
-        }
-    };
-})
-})();
-(function() {
 	angular.module('civil').directive('place', [
 		'$rootScope',
 		function($rootScope) {
@@ -231,6 +232,7 @@ function(config, $scope, Places, $rootScope) {
 			templateUrl: 'modules/places/placeDerictive.html',
 			controller: function($scope) {
 				$scope.moveMap = function(place) {
+					_zeo.push(['customEvent', 'open place from sidebar']);
 					$rootScope.$broadcast('moveMap', place);
 				}
 			}
@@ -252,6 +254,7 @@ function($scope, $rootScope, Places) {
 		$scope.place.latlng = [$scope.latlng.lat, $scope.latlng.lng].join(';');
 		$scope.place.votes = 0;
 		Places.post($scope.place).then(function(place) {
+			_zeo.push(['customEvent', 'place added']);
 			$rootScope.$broadcast('placeAdded', place);
 		});
 		$scope.place = {};
