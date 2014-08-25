@@ -1,17 +1,30 @@
 <div id="map"></div>
 <div ng-controller="SidebarController"  class="sidebar">
-<div class="simple-view" ng-hide="isLogoHidden" ng-click="showDetails()">{{name}}</div>
-<div class="detailed-view-bookmark" ng-show="isDetailedViewHidden" ng-mouseover="showDetails()"></div>
-<div ng-hide="isDetailedViewHidden">
-	<div class="detailed-view list-group" ng-mouseleave="hideDetails()">
-		<place ng-repeat="place in places"></place>
-	</div>
-</div>
+    <div class="detailed-view-bookmark"></div>
+    <div class="detailed-view">
+        <div class="service-info">
+            <div class="logo"></div>
+            <div class="navigation">
+                <ul>
+                    <li><a href="#/about-project/">О проекте</a></li>
+                    <li><a href="#/mailing/">Рассылка</a></li>
+                    <li><a href="#/contacts/">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class='list-toggler'>
+            <a href="#" ng-click="showNew()">Новые</a>
+            <a href="#" ng-click="showPopular()">Популярные</a>
+        </div>
+        <div class="list-group" ng-show='loaded'>
+            <place ng-repeat="place in places"></place>
+        </div>
+    </div>
 </div>
 <div id="place-tooltip">
 </div>
 
-<script type="text/template" id="creation-form">
+<script type="text/ng-template" id="creation-form">
 <form class="form-horizontal" ng-controller="SavePlaceController">
 <fieldset>
 
@@ -20,35 +33,35 @@
 
 <!-- Text input-->
 <div class="form-group">
-  <div class="col-md-12">
-  <input id="name" name="name" ng-model="place.name" type="text" placeholder="ваше имя" class="form-control input-md">
-  </div>
+    <div class="col-md-12">
+    <input id="name" name="name" ng-model="place.name" type="text" placeholder="ваше имя" class="form-control input-md">
+    </div>
 </div>
 
 <!-- Text input-->
 <div class="form-group">
-  <div class="col-md-12">
-  <input id="place" name="place" ng-model="place.description" type="text" placeholder="заголовок улучшения" class="form-control input-md">
-  </div>
+    <div class="col-md-12">
+    <input id="place" name="place" ng-model="place.description" type="text" placeholder="заголовок улучшения" class="form-control input-md">
+    </div>
 </div>
 
 <!-- Textarea -->
 <div class="form-group">
-  <div class="col-md-12">
-    <textarea class="form-control" ng-model="place.improvement" placeholder="опишите проблему" id="improvement" name="improvement"></textarea>
-  </div>
+    <div class="col-md-12">
+        <textarea class="form-control" ng-model="place.improvement" placeholder="опишите проблему" id="improvement" name="improvement"></textarea>
+    </div>
 </div>
 
 <!-- Button -->
 <div class="form-group">
-  <div class="col-md-4">
-    <button class="btn btn-primary" ng-click="save()">Сохранить</button>
-  </div>
+    <div class="col-md-4">
+        <button class="btn btn-primary" ng-click="save()">Сохранить</button>
+    </div>
 </div>
 
 </fieldset>
 </script>
-<script type="text/temaplate" id="place-doc">
+<template id="place-doc">
 <div class="place-dialog">
 <h4>{{place.description}} ({{place.votes}})</h4>
 {{place.improvement}}<br>
@@ -57,6 +70,9 @@
 <button class="btn btn-primary" ng-show="canVote" ng-click="vote(place)">
 Отличная идея
 </button>
-</div>
-</script>
+<script type="text/javascript">
+<!--
+document.write(VK.Share.button(false,{type: "round", text: "Поделиться"}));
+--></script>
+</template>
 </div>

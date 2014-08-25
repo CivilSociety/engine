@@ -3,7 +3,13 @@
 class PlacesController extends \BaseController {
 
 	public function index() {
-		return Response::json(Place::orderBy('created_at', 'desc')->get());
+		$order = Input::get('order');
+		if (!$order) {
+			$order = 'created_at';
+		}
+		$asc = strpos($order, '-') !== false ? 'desc':'asc';
+		$order = str_replace('-', '', $order);
+		return Response::json(Place::orderBy($order, $asc)->get());
 	}
 
 	public function show($id) {

@@ -29,7 +29,7 @@ function(config, $rootScope, $scope, $compile, Places) {
 	});
 
 	function drawMarker(place) {
-		var linkFunction = $compile(angular.element(document.getElementById('place-doc').innerHTML));
+		var linkFunction = $compile(angular.element($('#place-doc').html()));
 		var newScope = $scope.$new();
 		var radius = 5;
 		var dr = 2;

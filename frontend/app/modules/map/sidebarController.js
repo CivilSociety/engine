@@ -9,14 +9,9 @@ angular.module('civil').controller('SidebarController', [
 function(config, $scope, Places, $rootScope) {
 	$scope.name = config.name;
 	$rootScope.places = [];
-	Places.getList().then(function(places) {
-		places.forEach(function(place) {
-			place.date = moment(place.created_at).format('DD.MM.YYYY');
-		});
-		$rootScope.places = places;
-	});;
 	$scope.isDetailedViewHidden = true;
 	$scope.isLogoHidden = false;
+	$scope.loaded = false;
 	$scope.showDetails = function() {
 		$scope.isDetailedViewHidden = false;
 		$scope.isLogoHidden = true;
@@ -26,6 +21,27 @@ function(config, $scope, Places, $rootScope) {
 		$scope.isDetailedViewHidden = true;
 		$scope.isLogoHidden = false;
 	}
+	$scope.showPopular = function() {
+		$scope.loaded = false;
+		Places.getList({order: '-votes'}).then(function(places) {
+			places.forEach(function(place) {
+				place.date = moment(place.created_at).format('DD.MM.YYYY');
+			});
+			$rootScope.places = places;
+			$scope.loaded = true;
+		});;
+	}
+	$scope.showNew = function() {
+		$scope.loaded = false;
+		Places.getList().then(function(places) {
+			places.forEach(function(place) {
+				place.date = moment(place.created_at).format('DD.MM.YYYY');
+			});
+			$rootScope.places = places;
+			$scope.loaded = true;
+		});;
+	}
+	$scope.showNew();
 }
 ]);
 
