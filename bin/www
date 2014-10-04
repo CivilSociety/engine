@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+var app = require('../app');
+var cluster = require('cluster');
+var numCPUs = require('os').cpus().length;
+var http = require('http');
+
+app.set('port', process.env.PORT || 3000);
+
+if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'dev') {
+	http.createServer(app).listen(app.get('port'), function () {
+		console.log("running in " + process.env.NODE_ENV + " mode " + port);
+	});
+} else {
+	if (cluster.isMaster) {
+
+		for (var i = 0; i < numCPUs; i++) {
+			cluster.fork();
+		}
+
+		cluster.on('exit', function (worker, code, signal) {
+			console.log('worker ' + worker.process.pid + ' died');
+			cluster.fork();
+		});
+	} else {
+		http.createServer(app).listen(app.get('port'), function () {
+			console.log("Express server listening on port " + app.get('port'));
+		});
+	}
+}

@@ -248,7 +248,6 @@ function(config, $scope, Places, $rootScope) {
 			templateUrl: 'modules/places/placeDerictive.html',
 			controller: function($scope) {
 				$scope.moveMap = function(place) {
-					_zeo.push(['customEvent', 'open place from sidebar']);
 					$rootScope.$broadcast('moveMap', place);
 				}
 			}
@@ -270,7 +269,6 @@ function($scope, $rootScope, Places) {
 		$scope.place.latlng = [$scope.latlng.lat, $scope.latlng.lng].join(';');
 		$scope.place.votes = 0;
 		Places.post($scope.place).then(function(place) {
-			_zeo.push(['customEvent', 'place added']);
 			$rootScope.$broadcast('placeAdded', place);
 		});
 		$scope.place = {};
