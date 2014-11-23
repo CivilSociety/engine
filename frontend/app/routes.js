@@ -14,6 +14,9 @@ function ($stateProvider, $urlRouterProvider, RestangularProvider, config) {
 		});
 
 	RestangularProvider.setBaseUrl(config.apiUrl);
+	if (config.token) {
+		RestangularProvider.setDefaultHeaders({'x-auth-token': config.token});
+	}
 }
 ]);
 

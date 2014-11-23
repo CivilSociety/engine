@@ -22,15 +22,15 @@ function(config, $rootScope, $scope, $compile, Places) {
 		color: 'darkgreen'
 	};
 	var selection = L.circleMarker([50.5, 30.5], selectionOptions).addTo(map);
+	$scope.isAuthorized = config.token ? true : false;
 	$scope.place = {};
+	$rootScope.showPlace = false;
 
 	Places.getList().then(function(data) {
 		data.forEach(drawMarker);
 	});
 
 	function drawMarker(place) {
-		var linkFunction = $compile(angular.element($('#place-doc').html()));
-		var newScope = $scope.$new();
 		var radius = 5;
 		var dr = 2;
 		var maxRadius = 30;
@@ -46,23 +46,8 @@ function(config, $rootScope, $scope, $compile, Places) {
 			fillOpacity: 1,
 			radius: radius
 		};
-		var votes = window.localStorage.votes || '';
-		votes = votes.split(',');
 		place.date = moment(place.created_at).format('DD.MM.YYYY');
-		newScope.place = place;
-		newScope.canVote = (votes.indexOf(place.id) === -1);
 
-		newScope.vote = function(p) {
-			var votes = window.localStorage.votes || '';
-			votes = votes.split(',') || [];
-			if (votes.indexOf(place.id) !== -1)  return;
-			votes[votes.length] = place.id;
-			window.localStorage.votes = votes.join(',');
-			Places.one(p.id).customPUT({}, 'vote').then(function() {
-				p.votes++;
-				newScope.canVote = false;
-			});
-		}
 		var marker = L.circleMarker(latlng, options);
 		marker.placeId = place.id;
 		marker.on('mouseover', function() {
@@ -78,7 +63,12 @@ function(config, $rootScope, $scope, $compile, Places) {
 			selection.setStyle({opacity: 0});
 			hideTooltip();
 		});
-		marker.bindPopup(linkFunction(newScope)[0]).addTo(map);
+
+		marker.on('click', function() {
+			$rootScope.$broadcast('moveMap', place);
+		});
+
+		marker.addTo(map);
 		markers.push(marker);
 
 
@@ -91,6 +81,7 @@ function(config, $rootScope, $scope, $compile, Places) {
 	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a rel="nofollow" href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 	}).addTo(map);
+
 	map.setMaxBounds(config.resctictions);	
 
 	map.on('click', function(e) {
@@ -101,21 +92,19 @@ function(config, $rootScope, $scope, $compile, Places) {
 			currentMarker.setLatLng(e.latlng);
 		}
 		currentMarker.setOpacity(1);
-		var linkFunction = $compile(angular.element(document.getElementById('creation-form').innerHTML));
-		var newScope = $scope.$new();
-		newScope.latlng = currentMarker.getLatLng();
-		currentMarker.bindPopup(linkFunction(newScope)[0], {minWidth: 500}).openPopup();
-		currentMarker.getPopup().closeOnClick = false;
-		currentMarker.getPopup().on('close', function() {
-			currentMarker.setOpacity(0);
-		});
+		$rootScope.currentMarker = currentMarker;
+		$('#add-place-form').show();
+		$scope.latlng = currentMarker.getLatLng();
 	});
 
 	$rootScope.$on('moveMap', function(e, place) {	
 		map.panTo(place.latlng.split(';'));
 		markers.forEach(function(m) {
 			if (m.placeId === place.id) {
-				m.openPopup();
+				$rootScope.currentPlace = place;
+				var point = map.latLngToContainerPoint(m.getLatLng());
+				$rootScope.showPlace = true;
+				showModal(point, 'show-one-place');
 			}
 		});
 	});
@@ -134,8 +123,13 @@ function showTooltip(coords, text, radius) {
 	var tooltip = document.getElementById('place-tooltip');
 	tooltip.style.left = coords.x + radius + 30 + 'px';
 	tooltip.innerHTML = text;
-	tooltip.style.display = 'block';
 	tooltip.style.top = coords.y  - tooltip.offsetHeight/2 + 'px';
+}
+function showModal(coords, modalId) {
+	var modal = document.getElementById(modalId);
+	modal.style.left = coords.x - 30 - modal.offsetWidth + 'px';
+	modal.style.display = 'block';
+	modal.style.top = coords.y  - modal.offsetHeight/2 + 'px';
 }
 function hideTooltip() {
 	var tooltip = document.getElementById('place-tooltip');

@@ -5,8 +5,12 @@ var routes = require('./routes/index');
 var mongoose = require('mongoose');
 var config = require('./config');
 var app = express();
-
+var configuredPassport = require('./passport');
+var passport = require('passport');
 mongoose.connect(config.db.connectionString, {server: {auto_reconnect: true}});
+
+app.use(passport.initialize());
+app.use(passport.session());
 app.use('/public', express.static(__dirname + '/public'));
 app.use('/modules', express.static(__dirname + '/public/modules'));
 app.set('views', './views');
@@ -35,7 +39,6 @@ app.use(function(req, res, next) {
 
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    console.log(err);
     res.json({
         message: err.message,
         error: {}

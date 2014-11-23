@@ -4,9 +4,7 @@ var crypto = require('crypto');
 
 var schema = new mongoose.Schema({
 	name: String,
-	surname: String,
-	phone: String,
-	email: {
+	/*email: {
 		type:String,
 		unique: true,
 		required: true,
@@ -16,13 +14,16 @@ var schema = new mongoose.Schema({
 		type:String,
 		required: true,
 		set: setPassword
-	},
-	salt: {
+	},*/
+	vkontakteId: String,
+	facebookId: String,
+	avatar: String,
+	profileUrl: String,
+	/*salt: {
 		type:String,
 		default: generateSalt
-	},
-	role: {type: Number, default: 1},
-	clients: Array
+	},*/
+	role: {type: Number, default: 1}
 });
 
 schema.statics.generatePassword = generatePassword;

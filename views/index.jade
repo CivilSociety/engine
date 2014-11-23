@@ -1,24 +1,12 @@
 doctype htm
-html(ng-app="civil")
+html
     head
         title #{title}
         link(rel="stylesheet", href="/public/css/styles.css")
-        link(rel="stylesheet", href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css")
-        script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js")
-        script(src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js")
+        script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUXIcXT_AhcCZ8BXAcyn0OUfXN1LnRkgw")
         script(src="/public/js/vendor.js")
-        script(type="text/javascript", src="http://vk.com/js/api/share.js?90" charset="windows-1251")
-        script(type="text/javascript").
-            var app = angular.module('civil', ['ui.router', 'restangular', 'ngStorage']);
-            app.run().constant('config', {
-                name: 'Civil society',
-                resctictions: [[52.89112, 35.911224], [53.062703, 36.215065]],
-                url: "#{url}",
-                apiUrl: "#{apiUrl}",
-                lon: #{lon},
-                lat: #{lat},
-                zoom: #{zoom}
-            });
         script(src="/public/js/app.js")
-    body.
-        <div ui-view></div>
+    body(id="app")
+        div(id="map")
+        div(id="deck")
+        div(id="templates", style="display:none") !{templates}

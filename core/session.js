@@ -9,13 +9,16 @@ var SessionSchema = new mongoose.Schema({
 
 var SessionModel = mongoose.model('Session', SessionSchema);
 
-var Session = function (data) {
+function Session(data) {
 	var me = this;
 	if (data) {
 		this.data = data;
 	} else {
-		this.token = helpers.randomString(30) + (new Date()).valueOf();
 		this.data = {};
+	}
+
+	if (!this.token) {
+		this.token = helpers.randomString(30) + (new Date()).valueOf();
 	}
 
 	this.set = function (key, value) {

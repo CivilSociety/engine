@@ -9,4 +9,5 @@ module.exports = express.Router()
 	.get('/popular', middleware.authUser, controller.getPopular)
 	.get('/:id', middleware.authUser, controller.getById)
 	.put('/:id', middleware.authUser, controller.update)
-	.put('/:id/vote', middleware.authUser, controller.vote);
+	.put('/:id/vote', middleware.authUser, controller.vote)
+	.post('/:id/comments', middleware.authUser, controller.addComment);

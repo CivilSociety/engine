@@ -8,7 +8,8 @@ var schema = new mongoose.Schema({
 	votes: {type: Number, default: 0},
 	latlng: String,
 	denied: {type: Boolean, default: false},
-	moderated: {type: Boolean, default: false}
+	moderated: {type: Boolean, default: false},
+	comments: {type: Array, default: []}
 });
 
 var model = mongoose.model('place', schema);

@@ -43,6 +43,18 @@ var controller = {
 			if (!sub) return res.status(404);
 			Place.findByIdAndRemove(id, helpers.simpleOkResponse(res));
 		}
+	},
+	addComment: function(req, res) {
+		var id = req.params.id;
+		var comment = _.pick(req.body, 'message');
+		var user = req.getUser().getData();
+		comment.user =  {
+			id: user._id,
+			name: user.name,
+			avatar: user.avatar
+		};
+		comment.date = Date.now();
+		Place.findByIdAndUpdate(id, {$push: {comments: comment}}, helpers.simpleObjectResponse(res));
 	}
 };
 module.exports = controller;
