@@ -8,8 +8,8 @@ Engine.addRegions({
 });
 
 Engine.addInitializer(function(options){
-  //var map = new Views.Map();
-  //Engine.map.show(map);
+	var map = new Views.Map();
+	Engine.map.show(map);
 
 	var deck = new Views.Deck();
 	Engine.deck.show(deck);

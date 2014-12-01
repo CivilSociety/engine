@@ -2491,7 +2491,7 @@
   
       // Bind only after composite view is rendered to avoid adding child views
       // to nonexistent childViewContainer
-  
+
       if (this.collection) {
         this.listenTo(this.collection, 'add', this._onCollectionAdd);
         this.listenTo(this.collection, 'remove', this._onCollectionRemove);

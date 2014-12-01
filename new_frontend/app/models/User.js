@@ -1,5 +1,4 @@
-module.exports = Place;
-var Place = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 	url: '/users',
 	auth: function(email, password) {
 		var url = '/auth';

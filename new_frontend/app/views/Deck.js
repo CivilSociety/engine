@@ -4,7 +4,12 @@ var OnePlace = require('./OnePlace');
 
 module.exports = Marionette.CompositeView.extend({
 	template: "#deck-template",
-	model: Models.User,
-	collection: Collections.Places,
-	childView: OnePlace
+	model: new Models.User(),
+	childView: OnePlace,
+	collection: new Collections.Places(),
+	childViewContainer: '.places',
+	initialize: function() {
+		this.collection.fetch();
+	}
+
 });

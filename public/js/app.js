@@ -9,8 +9,8 @@ Engine.addRegions({
 });
 
 Engine.addInitializer(function(options){
-  //var map = new Views.Map();
-  //Engine.map.show(map);
+	var map = new Views.Map();
+	Engine.map.show(map);
 
 	var deck = new Views.Deck();
 	Engine.deck.show(deck);
@@ -36,16 +36,14 @@ module.exports = {
 	Places: require('./Places.js')
 }
 },{"./Places.js":2}],4:[function(require,module,exports){
-module.exports = Place;
-var Place = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 	url: '/places',
 	vote: function() {
 		return $.when($.put('/places/' + this.id + '/vote'));
 	}
 });
 },{}],5:[function(require,module,exports){
-module.exports = Place;
-var Place = Backbone.Model.extend({
+module.exports = Backbone.Model.extend({
 	url: '/users',
 	auth: function(email, password) {
 		var url = '/auth';
@@ -70,13 +68,20 @@ var OnePlace = require('./OnePlace');
 
 module.exports = Marionette.CompositeView.extend({
 	template: "#deck-template",
-	model: Models.User,
-	collection: Collections.Places,
-	childView: OnePlace
+	model: new Models.User(),
+	childView: OnePlace,
+	collection: new Collections.Places(),
+	childViewContainer: '.places',
+	initialize: function() {
+		this.collection.fetch();
+	}
+
 });
 },{"../collections":3,"../models":6,"./OnePlace":9}],8:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
+	className: 'mapContainer',
+	template: '#map-template',
 	onRender: function() {
 		var mapOptions = {
 			center: { lat: -34.397, lng: 150.644},
@@ -88,7 +93,21 @@ module.exports = Marionette.ItemView.extend({
 },{}],9:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
-	template: '#one-place-template'
+	template: '#one-place-template',
+	className: 'onePlace',
+	events: {
+		"click": "showPlace"
+	},
+	templateHelpers: function () {
+		return {
+			time: function(){
+				return moment(this.created_at).format('DD.MM.YYYY');
+			}
+		}
+	},
+	showPlace: function(e) {
+		console.log(e)
+	}
 });
 },{}],10:[function(require,module,exports){
 module.exports = {
