@@ -2,8 +2,12 @@ module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#one-place-template',
 	className: 'onePlace',
+	childViewEventPrefix: 'onePlace'
 	events: {
-		"click": "showPlace"
+		'click': 'show'
+	},
+	show: function() {
+		alert(1)
 	},
 	templateHelpers: function () {
 		return {
@@ -11,8 +15,5 @@ module.exports = Marionette.ItemView.extend({
 				return moment(this.created_at).format('DD.MM.YYYY');
 			}
 		}
-	},
-	showPlace: function(e) {
-		console.log(e)
 	}
 });

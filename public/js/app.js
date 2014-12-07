@@ -14,6 +14,11 @@ Engine.addInitializer(function(options){
 
 	var deck = new Views.Deck();
 	Engine.deck.show(deck);
+
+	deck.on('showPlace', map.showPlace);
+	map.on('map:showPlaceModal', function() {
+		console.log(arguments)
+	});
 });
 
 Engine.addInitializer(function(options){
@@ -21,7 +26,6 @@ Engine.addInitializer(function(options){
 	Backbone.history.start();
 });
 document.onready = function() {
-	console.log('starting');
 	Engine.start();
 }
 },{"./views":10}],2:[function(require,module,exports){
@@ -78,24 +82,51 @@ module.exports = Marionette.CompositeView.extend({
 
 });
 },{"../collections":3,"../models":6,"./OnePlace":9}],8:[function(require,module,exports){
+var Collections = require('../collections');
+
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	className: 'mapContainer',
 	template: '#map-template',
 	onRender: function() {
 		var mapOptions = {
-			center: { lat: -34.397, lng: 150.644},
-			zoom: 8
+			center: { lat: window.config.lat, lng: window.config.lon},
+			zoom: window.config.zoom,
+			disableDefaultUI: true
 		};
-		var map = new google.maps.Map(this.el, mapOptions);
+		this.map = new google.maps.Map(this.el, mapOptions);
+		this.places = new Collections.Places();
+		this.places.fetch().then(this.showMarkers.bind(this));
+		this.handleMapEvents();
+	},
+	showMarkers: function(places) {
+		places.forEach(this.drawMarker.bind(this));
+	},
+	drawMarker: function(place) {
+		var position = place.latlng.split(';');
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(position[0], position[1]),
+			map: this.map
+		});
+		var that = this;
+		google.maps.event.addListener(marker, 'click', function(e) {
+			that.map.setCenter(marker.getPosition());
+			that.trigger('map:showPlaceModal', place);
+		});
+	},
+	showPlace: function() {
+		debugger;
+	},
+	handleMapEvents: function() {
+
 	}
 });
-},{}],9:[function(require,module,exports){
+},{"../collections":3}],9:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#one-place-template',
 	className: 'onePlace',
-	events: {
+	triggers: {
 		"click": "showPlace"
 	},
 	templateHelpers: function () {
@@ -104,9 +135,6 @@ module.exports = Marionette.ItemView.extend({
 				return moment(this.created_at).format('DD.MM.YYYY');
 			}
 		}
-	},
-	showPlace: function(e) {
-		console.log(e)
 	}
 });
 },{}],10:[function(require,module,exports){

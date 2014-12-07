@@ -6,6 +6,11 @@ html
         script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUXIcXT_AhcCZ8BXAcyn0OUfXN1LnRkgw")
         script(src="/public/js/vendor.js")
         script(src="/public/js/app.js")
+        script.
+            window.config = {};
+            window.config.lon = #{lon};
+            window.config.lat = #{lat};
+            window.config.zoom = #{zoom};
     body(id="app")
         div(id="map")
         div(id="deck")

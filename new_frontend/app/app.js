@@ -13,6 +13,11 @@ Engine.addInitializer(function(options){
 
 	var deck = new Views.Deck();
 	Engine.deck.show(deck);
+
+	deck.on('deck:show', map.showPlace);
+	map.on('map:showPlaceModal', function() {
+		console.log(arguments)
+	});
 });
 
 Engine.addInitializer(function(options){
@@ -20,6 +25,5 @@ Engine.addInitializer(function(options){
 	Backbone.history.start();
 });
 document.onready = function() {
-	console.log('starting');
 	Engine.start();
 }
