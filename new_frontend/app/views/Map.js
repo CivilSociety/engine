@@ -4,6 +4,7 @@ module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	className: 'mapContainer',
 	template: '#map-template',
+	newPlace: undefined,
 	onRender: function() {
 		var mapOptions = {
 			center: { lat: window.config.lat, lng: window.config.lon},
@@ -11,29 +12,44 @@ module.exports = Marionette.ItemView.extend({
 			disableDefaultUI: true
 		};
 		this.map = new google.maps.Map(this.el, mapOptions);
+		google.maps.event.addListener(this.map, 'click', this.mapClicked.bind(this));
 		this.places = new Collections.Places();
 		this.places.fetch().then(this.showMarkers.bind(this));
-		this.handleMapEvents();
 	},
-	showMarkers: function(places) {
-		places.forEach(this.drawMarker.bind(this));
+	showMarkers: function() {
+		this.places.each(this.drawMarker.bind(this));
 	},
 	drawMarker: function(place) {
-		var position = place.latlng.split(';');
 		var marker = new google.maps.Marker({
-			position: new google.maps.LatLng(position[0], position[1]),
+			position: place.getPosition(),
 			map: this.map
 		});
 		var that = this;
 		google.maps.event.addListener(marker, 'click', function(e) {
 			that.map.setCenter(marker.getPosition());
-			that.trigger('map:showPlaceModal', place);
+			that.trigger('showPlaceModal', place);
 		});
 	},
-	showPlace: function() {
-		debugger;
+	showPlace: function(view) {
+		var model = view.model;
+		this.map.setCenter(model.getPosition());
+		this.trigger('showPlaceModal', model);
 	},
-	handleMapEvents: function() {
-
+	mapClicked: function(e) {
+		var latlng = e.latLng;
+		this.map.setCenter(latlng);
+		if (this.newPlace) {
+			this.newPlace.setMap(null);
+		}
+		var marker = new google.maps.Marker({
+			position: latlng,
+			map: this.map
+		});
+		this.newPlace = marker;
+		this.trigger('newPlace', latlng);
+	},
+	clearNewPlace: function() {
+		this.newPlace.setMap(null);
+		this.newPlace = undefined;
 	}
 });

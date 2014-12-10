@@ -1,3 +1,8 @@
+<script type="template" id="add-place-modal-template">
+	<h1>Новая идея</h1>
+	<input type="text" placeholder="Название идеи">
+	<textarea placeholder="Описание идеи"></textarea>
+</script>
 <div id="deck-template">
 	<div class="deck">
 		<div class="head">
@@ -20,6 +25,14 @@
 </div>
 <script type="template" id="map-template">
 
+</script>
+<script type="template" id="one-place-modal-template">
+	<div class="improvement"><%= improvement%></div>
+	<div class="votes"><%= votes%></div>
+	<div class="description"><%= description%></div>
+	<div class="name"><%= name%></div>
+	<div class="time"><%= time()%></div>
+	<br style="clear:both">
 </script>
 <script type="template" id="one-place-template">
 	<div class="improvement"><%= improvement%></div>

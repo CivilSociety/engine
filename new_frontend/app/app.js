@@ -4,7 +4,8 @@ var Engine = new Backbone.Marionette.Application({container: '#app'});
 
 Engine.addRegions({
 	map: '#map',
-	deck: '#deck'
+	deck: '#deck',
+	modal: '#modal'
 });
 
 Engine.addInitializer(function(options){
@@ -14,9 +15,27 @@ Engine.addInitializer(function(options){
 	var deck = new Views.Deck();
 	Engine.deck.show(deck);
 
-	deck.on('deck:show', map.showPlace);
-	map.on('map:showPlaceModal', function() {
-		console.log(arguments)
+	deck.on('childview:showPlace', map.showPlace.bind(map));
+	map.on('showPlaceModal', function(place) {
+		var placeModal = new Views.PlaceModal({
+			model: place
+		});
+		Engine.modal.show(placeModal);
+	});
+	map.on('newPlace', function(position) {
+		var addPlaceModal = new Views.AddPlaceModal({
+			position: position
+		});
+		Engine.modal.show(addPlaceModal);
+	});
+
+	$('#modal-container').on('click', function(e) {
+		if (e.target.id !== "modal-container") return;
+		$('#modal-container').hide();
+		map.clearNewPlace();
+	});
+	Engine.modal.on('before:show', function() {
+		$('#modal-container').show();
 	});
 });
 

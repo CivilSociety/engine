@@ -1,11 +1,7 @@
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
-	template: '#one-place-template',
-	className: 'onePlace',
-	childViewEventPrefix: 'onePlace',
-	triggers: {
-		'click': 'showPlace'
-	},
+	template: '#one-place-modal-template',
+	className: 'onePlaceModal',
 	templateHelpers: function () {
 		return {
 			time: function(){

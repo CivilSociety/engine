@@ -5,7 +5,8 @@ var Engine = new Backbone.Marionette.Application({container: '#app'});
 
 Engine.addRegions({
 	map: '#map',
-	deck: '#deck'
+	deck: '#deck',
+	modal: '#modal'
 });
 
 Engine.addInitializer(function(options){
@@ -15,9 +16,27 @@ Engine.addInitializer(function(options){
 	var deck = new Views.Deck();
 	Engine.deck.show(deck);
 
-	deck.on('showPlace', map.showPlace);
-	map.on('map:showPlaceModal', function() {
-		console.log(arguments)
+	deck.on('childview:showPlace', map.showPlace.bind(map));
+	map.on('showPlaceModal', function(place) {
+		var placeModal = new Views.PlaceModal({
+			model: place
+		});
+		Engine.modal.show(placeModal);
+	});
+	map.on('newPlace', function(position) {
+		var addPlaceModal = new Views.AddPlaceModal({
+			position: position
+		});
+		Engine.modal.show(addPlaceModal);
+	});
+
+	$('#modal-container').on('click', function(e) {
+		if (e.target.id !== "modal-container") return;
+		$('#modal-container').hide();
+		map.clearNewPlace();
+	});
+	Engine.modal.on('before:show', function() {
+		$('#modal-container').show();
 	});
 });
 
@@ -28,7 +47,7 @@ Engine.addInitializer(function(options){
 document.onready = function() {
 	Engine.start();
 }
-},{"./views":10}],2:[function(require,module,exports){
+},{"./views":12}],2:[function(require,module,exports){
 var Models = require('../models');
 
 module.exports = Backbone.Collection.extend({
@@ -44,6 +63,10 @@ module.exports = Backbone.Model.extend({
 	url: '/places',
 	vote: function() {
 		return $.when($.put('/places/' + this.id + '/vote'));
+	},
+	getPosition: function() {
+		var position = this.get('latlng').split(';');
+		return new google.maps.LatLng(position[0], position[1]);
 	}
 });
 },{}],5:[function(require,module,exports){
@@ -66,6 +89,12 @@ module.exports = {
 	User: require('./User.js')
 }
 },{"./Place.js":4,"./User.js":5}],7:[function(require,module,exports){
+module.exports = Marionette.ItemView.extend({
+	tagName: 'div',
+	template: '#add-place-modal-template',
+	className: 'addPlaceModal'
+});
+},{}],8:[function(require,module,exports){
 var Models = require('../models');
 var Collections = require('../collections');
 var OnePlace = require('./OnePlace');
@@ -81,13 +110,14 @@ module.exports = Marionette.CompositeView.extend({
 	}
 
 });
-},{"../collections":3,"../models":6,"./OnePlace":9}],8:[function(require,module,exports){
+},{"../collections":3,"../models":6,"./OnePlace":10}],9:[function(require,module,exports){
 var Collections = require('../collections');
 
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	className: 'mapContainer',
 	template: '#map-template',
+	newPlace: undefined,
 	onRender: function() {
 		var mapOptions = {
 			center: { lat: window.config.lat, lng: window.config.lon},
@@ -95,39 +125,55 @@ module.exports = Marionette.ItemView.extend({
 			disableDefaultUI: true
 		};
 		this.map = new google.maps.Map(this.el, mapOptions);
+		google.maps.event.addListener(this.map, 'click', this.mapClicked.bind(this));
 		this.places = new Collections.Places();
 		this.places.fetch().then(this.showMarkers.bind(this));
-		this.handleMapEvents();
 	},
-	showMarkers: function(places) {
-		places.forEach(this.drawMarker.bind(this));
+	showMarkers: function() {
+		this.places.each(this.drawMarker.bind(this));
 	},
 	drawMarker: function(place) {
-		var position = place.latlng.split(';');
 		var marker = new google.maps.Marker({
-			position: new google.maps.LatLng(position[0], position[1]),
+			position: place.getPosition(),
 			map: this.map
 		});
 		var that = this;
 		google.maps.event.addListener(marker, 'click', function(e) {
 			that.map.setCenter(marker.getPosition());
-			that.trigger('map:showPlaceModal', place);
+			that.trigger('showPlaceModal', place);
 		});
 	},
-	showPlace: function() {
-		debugger;
+	showPlace: function(view) {
+		var model = view.model;
+		this.map.setCenter(model.getPosition());
+		this.trigger('showPlaceModal', model);
 	},
-	handleMapEvents: function() {
-
+	mapClicked: function(e) {
+		var latlng = e.latLng;
+		this.map.setCenter(latlng);
+		if (this.newPlace) {
+			this.newPlace.setMap(null);
+		}
+		var marker = new google.maps.Marker({
+			position: latlng,
+			map: this.map
+		});
+		this.newPlace = marker;
+		this.trigger('newPlace', latlng);
+	},
+	clearNewPlace: function() {
+		this.newPlace.setMap(null);
+		this.newPlace = undefined;
 	}
 });
-},{"../collections":3}],9:[function(require,module,exports){
+},{"../collections":3}],10:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#one-place-template',
 	className: 'onePlace',
+	childViewEventPrefix: 'onePlace',
 	triggers: {
-		"click": "showPlace"
+		'click': 'showPlace'
 	},
 	templateHelpers: function () {
 		return {
@@ -137,9 +183,24 @@ module.exports = Marionette.ItemView.extend({
 		}
 	}
 });
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+module.exports = Marionette.ItemView.extend({
+	tagName: 'div',
+	template: '#one-place-modal-template',
+	className: 'onePlaceModal',
+	templateHelpers: function () {
+		return {
+			time: function(){
+				return moment(this.created_at).format('DD.MM.YYYY');
+			}
+		}
+	}
+});
+},{}],12:[function(require,module,exports){
 module.exports = {
 	Map: require('./Map.js'),
-	Deck: require('./Deck.js')
+	Deck: require('./Deck.js'),
+	PlaceModal: require('./PlaceModal.js'),
+	AddPlaceModal: require('./AddPlaceModal.js')
 }
-},{"./Deck.js":7,"./Map.js":8}]},{},[1]);
+},{"./AddPlaceModal.js":7,"./Deck.js":8,"./Map.js":9,"./PlaceModal.js":11}]},{},[1]);
