@@ -9,6 +9,7 @@ router
 		var params = conf.publicConstants;
 		var templates = 
 		params.token = token;
+		params.isAuthorized = false;
 		params.templates = fs.readFileSync('./public/templates.html');
 		res.render('index', params);
 	})

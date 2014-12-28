@@ -7,6 +7,12 @@ html
         script(src="/public/js/vendor.js")
         script(src="/public/js/app.js")
         script.
+            window.isAuthorized = function() {
+                return #{isAuthorized};
+            }
+            window.getUser = function() {
+                return null;
+            }
             window.config = {};
             window.config.lon = #{lon};
             window.config.lat = #{lat};
