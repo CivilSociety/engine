@@ -1,4 +1,4 @@
-<div id="deck-template">
+<script type="template" id="deck-template">
 	<div class="deck">
 		<div class="head">
 			<div class="logo"></div>
@@ -6,9 +6,13 @@
 				<a>О проекте</a>
 				<a>Рассылка</a>
 				<a>Контакты</a>
+				<a data-role="logout">Выйти</a>
 			</div>
 			<div class="auth-buttons">
 				<div id="facebook-auth">FB</div>
+			</div>
+			<div class="user-data">
+				Вы залогинены как <%= name%>
 			</div>
 		</div>
 		<div class="switcher">
@@ -20,4 +24,4 @@
 			
 		</div>
 	</div>
-</div>
+</script>

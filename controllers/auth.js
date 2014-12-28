@@ -6,6 +6,16 @@ var _ = require('lodash');
 
 exports.auth = auth;
 exports.me = me;
+exports.logout = logout;
+
+function logout(req, res) {
+	req.session.remove(function(err) {
+		if (err) {
+			return res.status(500).end();
+		}
+		res.status(200).end();
+	});
+}
 
 function me(req, res) {
 	res.json(req.getUser().getData());

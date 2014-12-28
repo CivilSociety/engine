@@ -20,6 +20,23 @@ Engine.addInitializer(function(options){
 		deck.render();
 	});
 
+	Engine.on('logout', function() {
+		delete localStorage.token;
+
+		window.isAuthorized = function() {
+			return false;
+		}
+
+		window.getUser = function() {
+			return null;
+		}
+
+		$.ajaxSetup({
+			headers: {'x-auth-token': null }
+		});
+		deck.render();
+	});
+
 	deck.on('childview:showPlace', map.showPlace.bind(map));
 	deck.on('authorized', function(authObject) {
 		$.post('/auth', authObject).then(function(user, statusText, response) {
@@ -40,14 +57,19 @@ Engine.addInitializer(function(options){
 			$.ajaxSetup({
 				headers: {'x-auth-token': user.token }
 			});
+			deck.render();
 		});
 	})
+
+	deck.on('logout', Engine.trigger.bind(Engine, 'logout'));
+
 	map.on('showPlaceModal', function(place) {
 		var placeModal = new Views.PlaceModal({
 			model: place
 		});
 		Engine.modal.show(placeModal);
 	});
+
 	map.on('newPlace', function(position) {
 		var addPlaceModal = new Views.AddPlaceModal({
 			position: position
@@ -88,7 +110,6 @@ Engine.addInitializer(function(options){
 	}
 });
 
-// Load the SDK asynchronously
 (function(d, s, id) {
 	var js, fjs = d.getElementsByTagName(s)[0];
 	if (d.getElementById(id)) return;
@@ -103,24 +124,35 @@ document.onready = function() {
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId: '1375171772781549',
-		cookie: true,  // enable cookies to allow the server to access the session
-		xfbml: true,  // parse social plugins on this page
-		version: 'v2.1' // use version 2.1
+		appId: window.config.facebookAppId,
+		cookie: true,
+		version: 'v2.1'
 	});
 };
-},{"./views":12}],2:[function(require,module,exports){
+},{"./views":15}],2:[function(require,module,exports){
+var Models = require('../models');
+
+module.exports = Backbone.Collection.extend({
+	model: Models.Comment,
+	url: '/comments'
+});
+},{"../models":8}],3:[function(require,module,exports){
 var Models = require('../models');
 
 module.exports = Backbone.Collection.extend({
 	model: Models.Place,
 	url: '/places'
 });
-},{"../models":6}],3:[function(require,module,exports){
+},{"../models":8}],4:[function(require,module,exports){
 module.exports = {
-	Places: require('./Places.js')
+	Places: require('./Places.js'),
+	Comments: require('./Comments.js')
 }
-},{"./Places.js":2}],4:[function(require,module,exports){
+},{"./Comments.js":2,"./Places.js":3}],5:[function(require,module,exports){
+module.exports = Backbone.Model.extend({
+	url: '/comments'
+});
+},{}],6:[function(require,module,exports){
 module.exports = Backbone.Model.extend({
 	url: '/places',
 	vote: function() {
@@ -131,7 +163,7 @@ module.exports = Backbone.Model.extend({
 		return new google.maps.LatLng(position[0], position[1]);
 	}
 });
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = Backbone.Model.extend({
 	url: '/users',
 	auth: function(email, password) {
@@ -145,18 +177,19 @@ module.exports = Backbone.Model.extend({
 		}));
 	}
 });
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = {
 	Place: require('./Place.js'),
-	User: require('./User.js')
+	User: require('./User.js'),
+	Comment: require('./Comment.js')
 }
-},{"./Place.js":4,"./User.js":5}],7:[function(require,module,exports){
+},{"./Comment.js":5,"./Place.js":6,"./User.js":7}],9:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#add-place-modal-template',
 	className: 'addPlaceModal'
 });
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var Models = require('../models');
 var Collections = require('../collections');
 var OnePlace = require('./OnePlace');
@@ -167,29 +200,43 @@ module.exports = Marionette.CompositeView.extend({
 	childView: OnePlace,
 	collection: new Collections.Places(),
 	childViewContainer: '.places',
+	events: {
+		'click [data-role="logout"]': 'logout'
+	},
+	logout: function() {
+		var that = this;
+		$.post('/auth/logout').then(function(data, responseText, response) {
+			that.trigger('logout');
+		});
+	},
 	initialize: function() {
 		this.collection.fetch();
 	},
 	onRender: function() {
 		var that = this;
-		if (isAuthorized()) {
-			return this.$('.auth-buttons').hide();
-		}
+
 		this.$('#facebook-auth').on('click', function() {
 			
 			FB.login(function(response){
-				console.log(response)
 				if (response.status === 'connected') {
 					that.trigger('authorized', {source: 'fb', response: response});
 				}
-			  // Handle the response object, like in statusChangeCallback() in our demo
-			  // code.
 			});
 		});
+		if (isAuthorized()) {
+			if (!this.model.get('id')) {
+				this.model.set(getUser());
+				this.render();
+			}
+			this.$('.auth-buttons').hide();
+		} else {
+			this.$('.user-data').hide();
+			this.$('[data-role="logout"]').hide();
+		}
 	}
 
 });
-},{"../collections":3,"../models":6,"./OnePlace":10}],9:[function(require,module,exports){
+},{"../collections":4,"../models":8,"./OnePlace":13}],11:[function(require,module,exports){
 var Collections = require('../collections');
 
 module.exports = Marionette.ItemView.extend({
@@ -241,16 +288,22 @@ module.exports = Marionette.ItemView.extend({
 		this.trigger('newPlace', latlng);
 	},
 	clearNewPlace: function() {
+		if (!this.newPlace) return;
 		this.newPlace.setMap(null);
 		this.newPlace = undefined;
 	}
 });
-},{"../collections":3}],10:[function(require,module,exports){
+},{"../collections":4}],12:[function(require,module,exports){
+module.exports = Marionette.ItemView.extend({
+	tagName: 'div',
+	template: '#one-comment-template',
+	className: 'oneComment'
+});
+},{}],13:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#one-place-template',
 	className: 'onePlace',
-	childViewEventPrefix: 'onePlace',
 	triggers: {
 		'click': 'showPlace'
 	},
@@ -262,24 +315,34 @@ module.exports = Marionette.ItemView.extend({
 		}
 	}
 });
-},{}],11:[function(require,module,exports){
-module.exports = Marionette.ItemView.extend({
+},{}],14:[function(require,module,exports){
+var Models = require('../models');
+var Collections = require('../collections');
+var OneComment = require('./OneComment');
+
+module.exports = Marionette.CompositeView.extend({
 	tagName: 'div',
 	template: '#one-place-modal-template',
 	className: 'onePlaceModal',
+	childView: OneComment,
+	collection: new Collections.Comments(),
+	childViewContainer: '.comments',
 	templateHelpers: function () {
 		return {
 			time: function(){
 				return moment(this.created_at).format('DD.MM.YYYY');
 			}
 		}
+	},
+	initialize: function() {
+		this.collection.fetch({data: {placeId: this.model.get('id')}});
 	}
 });
-},{}],12:[function(require,module,exports){
+},{"../collections":4,"../models":8,"./OneComment":12}],15:[function(require,module,exports){
 module.exports = {
 	Map: require('./Map.js'),
 	Deck: require('./Deck.js'),
 	PlaceModal: require('./PlaceModal.js'),
 	AddPlaceModal: require('./AddPlaceModal.js')
 }
-},{"./AddPlaceModal.js":7,"./Deck.js":8,"./Map.js":9,"./PlaceModal.js":11}]},{},[1]);
+},{"./AddPlaceModal.js":9,"./Deck.js":10,"./Map.js":11,"./PlaceModal.js":14}]},{},[1]);

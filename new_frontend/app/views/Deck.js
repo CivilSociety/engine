@@ -8,25 +8,39 @@ module.exports = Marionette.CompositeView.extend({
 	childView: OnePlace,
 	collection: new Collections.Places(),
 	childViewContainer: '.places',
+	events: {
+		'click [data-role="logout"]': 'logout'
+	},
+	logout: function() {
+		var that = this;
+		$.post('/auth/logout').then(function(data, responseText, response) {
+			that.trigger('logout');
+		});
+	},
 	initialize: function() {
 		this.collection.fetch();
 	},
 	onRender: function() {
 		var that = this;
-		if (isAuthorized()) {
-			return this.$('.auth-buttons').hide();
-		}
+
 		this.$('#facebook-auth').on('click', function() {
 			
 			FB.login(function(response){
-				console.log(response)
 				if (response.status === 'connected') {
 					that.trigger('authorized', {source: 'fb', response: response});
 				}
-			  // Handle the response object, like in statusChangeCallback() in our demo
-			  // code.
 			});
 		});
+		if (isAuthorized()) {
+			if (!this.model.get('id')) {
+				this.model.set(getUser());
+				this.render();
+			}
+			this.$('.auth-buttons').hide();
+		} else {
+			this.$('.user-data').hide();
+			this.$('[data-role="logout"]').hide();
+		}
 	}
 
 });

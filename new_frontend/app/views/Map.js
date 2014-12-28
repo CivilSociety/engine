@@ -49,6 +49,7 @@ module.exports = Marionette.ItemView.extend({
 		this.trigger('newPlace', latlng);
 	},
 	clearNewPlace: function() {
+		if (!this.newPlace) return;
 		this.newPlace.setMap(null);
 		this.newPlace = undefined;
 	}

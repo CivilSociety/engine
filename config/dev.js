@@ -8,7 +8,8 @@ module.exports = {
 		apiUrl: 'http://localhost:3000/',
 		lon: 36.06863021850586,
 		lat: 52.96766504873649,
-		zoom: 13
+		zoom: 13,
+		facebookAppId: '1375171772781549'
 	},
 	vk: {
 		clientID: '4558998',

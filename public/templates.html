@@ -3,7 +3,7 @@
 	<input type="text" placeholder="Название идеи">
 	<textarea placeholder="Описание идеи"></textarea>
 </script>
-<div id="deck-template">
+<script type="template" id="deck-template">
 	<div class="deck">
 		<div class="head">
 			<div class="logo"></div>
@@ -11,9 +11,13 @@
 				<a>О проекте</a>
 				<a>Рассылка</a>
 				<a>Контакты</a>
+				<a data-role="logout">Выйти</a>
 			</div>
 			<div class="auth-buttons">
 				<div id="facebook-auth">FB</div>
+			</div>
+			<div class="user-data">
+				Вы залогинены как <%= name%>
 			</div>
 		</div>
 		<div class="switcher">
@@ -25,9 +29,13 @@
 			
 		</div>
 	</div>
-</div>
+</script>
 <script type="template" id="map-template">
 
+</script>
+<script type="template" id="one-comment-template">
+	comment
+	<br style="clear:both">
 </script>
 <script type="template" id="one-place-modal-template">
 	<div class="improvement"><%= improvement%></div>
@@ -36,6 +44,7 @@
 	<div class="name"><%= name%></div>
 	<div class="time"><%= time()%></div>
 	<br style="clear:both">
+	<div class="comments"></div>
 </script>
 <script type="template" id="one-place-template">
 	<div class="improvement"><%= improvement%></div>

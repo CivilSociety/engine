@@ -9,7 +9,8 @@ function authUser(req, res, next) {
 	}
 	session.restoreByToken(token, function(err, session) {
 		if (err) return next(err);
-			req.getUser = function() {
+		req.session = session;
+		req.getUser = function() {
 			return creatAuthorizedUser(session);
 		}
 		return next();

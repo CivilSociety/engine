@@ -19,6 +19,23 @@ Engine.addInitializer(function(options){
 		deck.render();
 	});
 
+	Engine.on('logout', function() {
+		delete localStorage.token;
+
+		window.isAuthorized = function() {
+			return false;
+		}
+
+		window.getUser = function() {
+			return null;
+		}
+
+		$.ajaxSetup({
+			headers: {'x-auth-token': null }
+		});
+		deck.render();
+	});
+
 	deck.on('childview:showPlace', map.showPlace.bind(map));
 	deck.on('authorized', function(authObject) {
 		$.post('/auth', authObject).then(function(user, statusText, response) {
@@ -39,14 +56,19 @@ Engine.addInitializer(function(options){
 			$.ajaxSetup({
 				headers: {'x-auth-token': user.token }
 			});
+			deck.render();
 		});
 	})
+
+	deck.on('logout', Engine.trigger.bind(Engine, 'logout'));
+
 	map.on('showPlaceModal', function(place) {
 		var placeModal = new Views.PlaceModal({
 			model: place
 		});
 		Engine.modal.show(placeModal);
 	});
+
 	map.on('newPlace', function(position) {
 		var addPlaceModal = new Views.AddPlaceModal({
 			position: position
@@ -87,7 +109,6 @@ Engine.addInitializer(function(options){
 	}
 });
 
-// Load the SDK asynchronously
 (function(d, s, id) {
 	var js, fjs = d.getElementsByTagName(s)[0];
 	if (d.getElementById(id)) return;
@@ -102,9 +123,8 @@ document.onready = function() {
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId: '1375171772781549',
-		cookie: true,  // enable cookies to allow the server to access the session
-		xfbml: true,  // parse social plugins on this page
-		version: 'v2.1' // use version 2.1
+		appId: window.config.facebookAppId,
+		cookie: true,
+		version: 'v2.1'
 	});
 };

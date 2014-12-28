@@ -18,6 +18,7 @@ router
 var routes = {
 	index: router,
 	places: require('./places'),
+	comments: require('./comments'),
 	auth: require('./auth')
 };
 
