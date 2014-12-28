@@ -75,6 +75,16 @@ Engine.addInitializer(function(options){
 			position: position
 		});
 		Engine.modal.show(addPlaceModal);
+		addPlaceModal.on('cancel', function() {
+			addPlaceModal.destroy();
+			$('#modal-container').hide();
+		});
+		addPlaceModal.on('placeCreated', function(place) {
+			deck.addPlace(place);
+			map.drawMarker(place);
+			addPlaceModal.destroy();
+			$('#modal-container').hide();
+		});
 	});
 
 	$('#modal-container').on('click', function(e) {
@@ -126,6 +136,7 @@ window.fbAsyncInit = function() {
 	FB.init({
 		appId: window.config.facebookAppId,
 		cookie: true,
+		xfbml: true,
 		version: 'v2.1'
 	});
 };
@@ -159,7 +170,7 @@ module.exports = Backbone.Model.extend({
 		return $.when($.put('/places/' + this.id + '/vote'));
 	},
 	getPosition: function() {
-		var position = this.get('latlng').split(';');
+		var position = this.get('latlng').split(':');
 		return new google.maps.LatLng(position[0], position[1]);
 	}
 });
@@ -184,12 +195,39 @@ module.exports = {
 	Comment: require('./Comment.js')
 }
 },{"./Comment.js":5,"./Place.js":6,"./User.js":7}],9:[function(require,module,exports){
+var Place = require('../models/Place');
+
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#add-place-modal-template',
-	className: 'addPlaceModal'
+	className: 'addPlaceModal',
+	triggers: {
+		'click .cancel-button': 'cancel'
+	},
+	events: {
+		'click .save-button': 'savePlace'
+	},
+	savePlace: function() {
+		var that = this;
+		var improvement = this.$('[data-value="name"]').val();
+		var description = this.$('[data-value="description"]').val();
+		var position = this.options.position;
+		var place = new Place({
+			improvement: improvement,
+			description: description,
+			latlng: position.lat() + ':' + position.lng()
+		});
+		place.save({}, {
+			success: function() {
+				that.trigger('placeCreated', place);
+			},
+			error: function() {
+				//@TODO: handle errors
+			}
+		});
+	}
 });
-},{}],10:[function(require,module,exports){
+},{"../models/Place":6}],10:[function(require,module,exports){
 var Models = require('../models');
 var Collections = require('../collections');
 var OnePlace = require('./OnePlace');
@@ -212,14 +250,24 @@ module.exports = Marionette.CompositeView.extend({
 	initialize: function() {
 		this.collection.fetch();
 	},
+	addPlace: function(place) {
+		this.collection.add(place);
+		this.render();
+	},
 	onRender: function() {
 		var that = this;
 
 		this.$('#facebook-auth').on('click', function() {
 			
-			FB.login(function(response){
+			FB.getLoginStatus(function(response) {
 				if (response.status === 'connected') {
 					that.trigger('authorized', {source: 'fb', response: response});
+				} else {
+					FB.login(function(response){
+						if (response.status === 'connected') {
+							that.trigger('authorized', {source: 'fb', response: response});
+						}
+					});
 				}
 			});
 		});
@@ -327,6 +375,9 @@ module.exports = Marionette.CompositeView.extend({
 	childView: OneComment,
 	collection: new Collections.Comments(),
 	childViewContainer: '.comments',
+	events: {
+		'click .share-fb': 'shareFb'
+	},
 	templateHelpers: function () {
 		return {
 			time: function(){
@@ -336,6 +387,15 @@ module.exports = Marionette.CompositeView.extend({
 	},
 	initialize: function() {
 		this.collection.fetch({data: {placeId: this.model.get('id')}});
+	},
+	shareFb: function() {				
+		FB.ui(
+		{
+			method: 'share',
+			href: location.href + '#placeId=' + this.model.get('id')
+		}, function(response){
+
+		});
 	}
 });
 },{"../collections":4,"../models":8,"./OneComment":12}],15:[function(require,module,exports){

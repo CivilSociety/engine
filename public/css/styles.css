@@ -1,3 +1,26 @@
+.button,
+.save-button,
+.cancel-button {
+  cursor: pointer;
+  font-size: 0.9em;
+  padding: 10px;
+  border: 0;
+  margin: 5px;
+}
+.button:hover,
+.save-button:hover,
+.cancel-button:hover {
+  outline: 1px solid #000;
+}
+.save-button {
+  background-color: #00a2af;
+  color: #fff;
+}
+.cancel-button {
+  background-color: transparent;
+  color: #000;
+}
+
 .deck {
   background-color: rgba(255,255,255,0.8);
   padding: 20px;
@@ -52,7 +75,7 @@ body {
   bottom: 0;
   left: 0;
   display: none;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.1);
   z-index: 99999;
 }
 #modal {
@@ -60,8 +83,30 @@ body {
   position: relative;
   margin: 10% auto;
   padding: 5px 20px 13px 20px;
-  border-radius: 10px;
   background-color: rgba(255,255,255,0.8);
+}
+.addPlaceModal h1 {
+  text-transform: uppercase;
+  font-size: 1.2em;
+}
+.addPlaceModal input {
+  border: 0;
+  border-bottom: 1px dotted #808080;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+  font-size: 1em;
+  padding: 5px 0;
+  margin: 10px 0;
+}
+.addPlaceModal textarea {
+  display: block;
+  background-color: transparent;
+  border: 0;
+  font-size: 1em;
+  width: 100%;
+  margin: 10px 0;
+  height: 7em;
 }
 
 .onePlace {

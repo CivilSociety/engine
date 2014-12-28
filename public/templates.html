@@ -1,7 +1,9 @@
 <script type="template" id="add-place-modal-template">
 	<h1>Новая идея</h1>
-	<input type="text" placeholder="Название идеи">
-	<textarea placeholder="Описание идеи"></textarea>
+	<input type="text" data-value="name" placeholder="Название идеи">
+	<textarea placeholder="Описание идеи" data-value="description"></textarea>
+	<button class="save-button">Сохранить</button>
+	<button class="cancel-button">Отменить</button>
 </script>
 <script type="template" id="deck-template">
 	<div class="deck">
@@ -44,6 +46,7 @@
 	<div class="name"><%= name%></div>
 	<div class="time"><%= time()%></div>
 	<br style="clear:both">
+	<div class="share-fb">share to facebook</div>
 	<div class="comments"></div>
 </script>
 <script type="template" id="one-place-template">

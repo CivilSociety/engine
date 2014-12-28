@@ -74,6 +74,16 @@ Engine.addInitializer(function(options){
 			position: position
 		});
 		Engine.modal.show(addPlaceModal);
+		addPlaceModal.on('cancel', function() {
+			addPlaceModal.destroy();
+			$('#modal-container').hide();
+		});
+		addPlaceModal.on('placeCreated', function(place) {
+			deck.addPlace(place);
+			map.drawMarker(place);
+			addPlaceModal.destroy();
+			$('#modal-container').hide();
+		});
 	});
 
 	$('#modal-container').on('click', function(e) {
@@ -125,6 +135,7 @@ window.fbAsyncInit = function() {
 	FB.init({
 		appId: window.config.facebookAppId,
 		cookie: true,
+		xfbml: true,
 		version: 'v2.1'
 	});
 };

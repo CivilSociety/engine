@@ -20,14 +20,24 @@ module.exports = Marionette.CompositeView.extend({
 	initialize: function() {
 		this.collection.fetch();
 	},
+	addPlace: function(place) {
+		this.collection.add(place);
+		this.render();
+	},
 	onRender: function() {
 		var that = this;
 
 		this.$('#facebook-auth').on('click', function() {
 			
-			FB.login(function(response){
+			FB.getLoginStatus(function(response) {
 				if (response.status === 'connected') {
 					that.trigger('authorized', {source: 'fb', response: response});
+				} else {
+					FB.login(function(response){
+						if (response.status === 'connected') {
+							that.trigger('authorized', {source: 'fb', response: response});
+						}
+					});
 				}
 			});
 		});

@@ -18,6 +18,7 @@
     "marionette": "~2.2.2",
     "lodash": "~2.4.1",
     "require": "*",
-    "moment": "~2.8.3"
+    "moment": "~2.8.3",
+    "rivets": "~0.7.1"
   }
 }

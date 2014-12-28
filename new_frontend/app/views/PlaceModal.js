@@ -9,6 +9,9 @@ module.exports = Marionette.CompositeView.extend({
 	childView: OneComment,
 	collection: new Collections.Comments(),
 	childViewContainer: '.comments',
+	events: {
+		'click .share-fb': 'shareFb'
+	},
 	templateHelpers: function () {
 		return {
 			time: function(){
@@ -18,5 +21,14 @@ module.exports = Marionette.CompositeView.extend({
 	},
 	initialize: function() {
 		this.collection.fetch({data: {placeId: this.model.get('id')}});
+	},
+	shareFb: function() {				
+		FB.ui(
+		{
+			method: 'share',
+			href: location.href + '#placeId=' + this.model.get('id')
+		}, function(response){
+
+		});
 	}
 });
