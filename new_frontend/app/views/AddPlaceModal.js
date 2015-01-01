@@ -20,13 +20,9 @@ module.exports = Marionette.ItemView.extend({
 			description: description,
 			latlng: position.lat() + ':' + position.lng()
 		});
-		place.save({}, {
-			success: function() {
-				that.trigger('placeCreated', place);
-			},
-			error: function() {
-				//@TODO: handle errors
-			}
+		place.save().done(function(place) {
+			that.trigger('placeCreated', place);
 		});
+		//@TODO: handle errors
 	}
 });

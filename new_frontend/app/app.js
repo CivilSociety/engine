@@ -9,6 +9,8 @@ Engine.addRegions({
 });
 
 Engine.addInitializer(function(options){
+
+	// @TODO: refactor this shity function
 	var map = new Views.Map();
 	Engine.map.show(map);
 
@@ -84,15 +86,20 @@ Engine.addInitializer(function(options){
 			addPlaceModal.destroy();
 			$('#modal-container').hide();
 		});
+		addPlaceModal.on('authWarning', function() {
+			alert('Auth please');
+		});
 	});
+
+	Engine.modal.on('before:show', function() {
+		$('#modal-container').show();
+	});
+
 
 	$('#modal-container').on('click', function(e) {
 		if (e.target.id !== "modal-container") return;
 		$('#modal-container').hide();
 		map.clearNewPlace();
-	});
-	Engine.modal.on('before:show', function() {
-		$('#modal-container').show();
 	});
 });
 

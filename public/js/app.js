@@ -10,6 +10,8 @@ Engine.addRegions({
 });
 
 Engine.addInitializer(function(options){
+
+	// @TODO: refactor this shity function
 	var map = new Views.Map();
 	Engine.map.show(map);
 
@@ -85,15 +87,20 @@ Engine.addInitializer(function(options){
 			addPlaceModal.destroy();
 			$('#modal-container').hide();
 		});
+		addPlaceModal.on('authWarning', function() {
+			alert('Auth please');
+		});
 	});
+
+	Engine.modal.on('before:show', function() {
+		$('#modal-container').show();
+	});
+
 
 	$('#modal-container').on('click', function(e) {
 		if (e.target.id !== "modal-container") return;
 		$('#modal-container').hide();
 		map.clearNewPlace();
-	});
-	Engine.modal.on('before:show', function() {
-		$('#modal-container').show();
 	});
 });
 
@@ -217,14 +224,10 @@ module.exports = Marionette.ItemView.extend({
 			description: description,
 			latlng: position.lat() + ':' + position.lng()
 		});
-		place.save({}, {
-			success: function() {
-				that.trigger('placeCreated', place);
-			},
-			error: function() {
-				//@TODO: handle errors
-			}
+		place.save().done(function(place) {
+			that.trigger('placeCreated', place);
 		});
+		//@TODO: handle errors
 	}
 });
 },{"../models/Place":6}],10:[function(require,module,exports){
@@ -376,10 +379,11 @@ module.exports = Marionette.CompositeView.extend({
 	collection: new Collections.Comments(),
 	childViewContainer: '.comments',
 	events: {
-		'click .share-fb': 'shareFb'
+		'click .share-fb-button': 'shareFb'
 	},
 	templateHelpers: function () {
 		return {
+			isAuthorized: isAuthorized,
 			time: function(){
 				return moment(this.created_at).format('DD.MM.YYYY');
 			}
@@ -388,13 +392,42 @@ module.exports = Marionette.CompositeView.extend({
 	initialize: function() {
 		this.collection.fetch({data: {placeId: this.model.get('id')}});
 	},
+	onRender: function() {
+		this.$('.comment-button').on('click', this.showCommentForm.bind(this));
+		this.$('.save-button').on('click', this.saveComment.bind(this));
+	},
+	showCommentForm: function() {
+		if (isAuthorized()) {
+			this.$('.add-comment-form').slideToggle();
+		} else {
+			this.trigger('authWarning');
+		}
+	},
+	saveComment: function() {
+		if (!isAuthorized) {
+			return this.trigger('authWarning');
+		}
+		var text = this.$('[data-value="text"]').val().trim();
+		if (_.isEmpty(text)) {
+			return; //@TODO: show validaion error
+		}
+		var comment = new Models.Comment({
+			text: text,
+			placeId: this.model.get('id')
+		});
+		comment.save().done(this.commentAdded.bind(this));
+	},
+	commentAdded: function(comment, textResponse) {
+		this.collection.add(comment);
+		this.render();
+	},
 	shareFb: function() {				
 		FB.ui(
 		{
 			method: 'share',
 			href: location.href + '#placeId=' + this.model.get('id')
 		}, function(response){
-
+			// @TODO: do something here
 		});
 	}
 });

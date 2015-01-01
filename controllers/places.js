@@ -4,7 +4,7 @@ var helpers = require('../core/helpers');
 
 var controller = {
 	getAll: function(req, res) {
-		Place.find().exec(helpers.simpleCollectionResponse(res));
+		Place.find().sort({created_at: -1}).exec(helpers.simpleCollectionResponse(res));
 	},
 	getPopular: function(req, res) {
 		Place.find().sort({votes: -1}).exec(helpers.simpleCollectionResponse(res));
@@ -14,7 +14,8 @@ var controller = {
 		Place.findById(id, helpers.simpleObjectResponse(res));
 	},
 	create: function(req, res) {
-		var data = _.pick(req.body, 'name', 'improvement', 'description', 'latlng');
+		var data = _.pick(req.body, 'improvement', 'description', 'latlng');
+		data.name = req.getUser().getData().name;
 		var sub = new Place(data);
 		sub.save(helpers.simpleCreatedResponse(res));
 	},
