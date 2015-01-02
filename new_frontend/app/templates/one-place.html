@@ -2,7 +2,11 @@
 	<div class="improvement"><%= improvement%></div>
 	<div class="votes"><%= votes%></div>
 	<div class="description"><%= description%></div>
+	<% if (getUser() && getUser().profileUrl) { %>
+	<a href="<%= getUser().profileUrl%>" target="_blank" class="name"><%= name%></a>
+	<% } else { %>
 	<div class="name"><%= name%></div>
+	<% } %>
 	<div class="time"><%= time()%></div>
 	<br style="clear:both">
 </script>

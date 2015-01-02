@@ -4,14 +4,34 @@ var helpers = require('../core/helpers');
 
 var controller = {
 	getAll: function(req, res) {
-		Place.find().sort({created_at: -1}).exec(helpers.simpleCollectionResponse(res));
+		var userId = req.getUser().getData().id;
+		Place.find().sort({created_at: -1}).exec(function(err, places) {
+			res.json(places.map(formatPlace));
+		});
+		function formatPlace(place) {
+			var data = _.omit(place.toJSON(), 'votedUsers', '__v', '_id');
+			data.canVote = false;
+			data.id = place._id;
+			if (userId && place.votedUsers.indexOf(userId) === -1) {
+				data.canVote = true;
+			}
+			return data;
+		}
 	},
 	getPopular: function(req, res) {
 		Place.find().sort({votes: -1}).exec(helpers.simpleCollectionResponse(res));
 	},
 	getById: function(req, res) {
 		var id = req.params.id;
-		Place.findById(id, helpers.simpleObjectResponse(res));
+		var userId = req.getUser().getData().id;
+		Place.findById(id, function(err, place) {
+			var data = _.omit(place, 'votedUsers');
+			data.canVote = false;
+			if (place.votedUsers.indexOf(userId) > -1) {
+				data.canVote = true;
+			}
+			res.json(data);
+		});
 	},
 	create: function(req, res) {
 		var data = _.pick(req.body, 'improvement', 'description', 'latlng');
@@ -21,7 +41,8 @@ var controller = {
 	},
 	vote: function(req, res) {
 		var id = req.params.id;
-		Place.findByIdAndUpdate(id, { $inc: { votes: 1 }}, helpers.simpleObjectResponse(res));
+		var userId = req.getUser().getData().id;
+		Place.findByIdAndUpdate(id, { $inc: { votes: 1 }, $push: {votedUsers: userId}}, helpers.simpleObjectResponse(res));
 	},
 	update: function(req, res) {
 		var id = req.params.id;

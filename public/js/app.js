@@ -9,6 +9,11 @@ Engine.addRegions({
 	modal: '#modal'
 });
 
+$.ajaxSetup({
+	headers: {'x-auth-token': localStorage.token }
+});
+
+
 Engine.addInitializer(function(options){
 
 	// @TODO: refactor this shity function
@@ -70,6 +75,9 @@ Engine.addInitializer(function(options){
 			model: place
 		});
 		Engine.modal.show(placeModal);
+		placeModal.on('voted', function(place) {
+			deck.updatePlace(place);
+		});
 	});
 
 	map.on('newPlace', function(position) {
@@ -110,11 +118,6 @@ Engine.addInitializer(function(options){
 		window.isAuthorized = function() {
 			return true;
 		}
-
-		$.ajaxSetup({
-			headers: {'x-auth-token': localStorage.token }
-		});
-
 		$.get('/auth/me').then(function(user, statusText, response) {
 			if (response.status != 200) {
 				return;
@@ -152,7 +155,10 @@ var Models = require('../models');
 
 module.exports = Backbone.Collection.extend({
 	model: Models.Comment,
-	url: '/comments'
+	url: '/comments',
+	comparator: function(comment) {
+		return -(new Date(comment.get('date'))).valueOf();
+	}
 });
 },{"../models":8}],3:[function(require,module,exports){
 var Models = require('../models');
@@ -174,7 +180,10 @@ module.exports = Backbone.Model.extend({
 module.exports = Backbone.Model.extend({
 	url: '/places',
 	vote: function() {
-		return $.when($.put('/places/' + this.id + '/vote'));
+		return $.when($.ajax({
+			url: '/places/' + this.id + '/vote',
+			method: 'PUT'
+		}));
 	},
 	getPosition: function() {
 		var position = this.get('latlng').split(':');
@@ -224,7 +233,7 @@ module.exports = Marionette.ItemView.extend({
 			description: description,
 			latlng: position.lat() + ':' + position.lng()
 		});
-		place.save().done(function(place) {
+		place.save().done(function() {
 			that.trigger('placeCreated', place);
 		});
 		//@TODO: handle errors
@@ -255,6 +264,10 @@ module.exports = Marionette.CompositeView.extend({
 	},
 	addPlace: function(place) {
 		this.collection.add(place);
+		this.render();
+	},
+	updatePlace: function(place) {
+		this.collection.findWhere({'id': place.id}).set('votes', place.votes)
 		this.render();
 	},
 	onRender: function() {
@@ -348,7 +361,15 @@ module.exports = Marionette.ItemView.extend({
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#one-comment-template',
-	className: 'oneComment'
+	className: 'oneComment',
+	templateHelpers: function () {
+		return {
+			isAuthorized: isAuthorized,
+			time: function(){
+				return moment(this.date).format('DD.MM.YYYY');
+			}
+		}
+	}
 });
 },{}],13:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
@@ -379,7 +400,11 @@ module.exports = Marionette.CompositeView.extend({
 	collection: new Collections.Comments(),
 	childViewContainer: '.comments',
 	events: {
-		'click .share-fb-button': 'shareFb'
+		'click .share-fb-button': 'shareFb',
+		'click .comment-button': 'showCommentForm',
+		'click .save-button': 'saveComment',
+		'click .vote-button': 'vote',
+
 	},
 	templateHelpers: function () {
 		return {
@@ -392,16 +417,20 @@ module.exports = Marionette.CompositeView.extend({
 	initialize: function() {
 		this.collection.fetch({data: {placeId: this.model.get('id')}});
 	},
-	onRender: function() {
-		this.$('.comment-button').on('click', this.showCommentForm.bind(this));
-		this.$('.save-button').on('click', this.saveComment.bind(this));
-	},
 	showCommentForm: function() {
 		if (isAuthorized()) {
 			this.$('.add-comment-form').slideToggle();
 		} else {
 			this.trigger('authWarning');
 		}
+	},
+	vote: function() {
+		var that = this;
+		this.model.vote().then(function(place) {
+			that.model.set('votes', place.votes);
+			that.trigger('voted', place);
+			that.render();
+		});
 	},
 	saveComment: function() {
 		if (!isAuthorized) {

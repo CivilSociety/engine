@@ -4,7 +4,7 @@ var helpers = require('../core/helpers');
 
 var controller = {
 	getAll: function(req, res) {
-		Comment.find({placeId: req.query.placeId}).exec(helpers.simpleCollectionResponse(res));
+		Comment.find({placeId: req.query.placeId}).sort({date: -1}).exec(helpers.simpleCollectionResponse(res));
 	},
 	create: function(req, res) {
 		var data = _.pick(req.body, 'text', 'placeId');

@@ -8,6 +8,11 @@ Engine.addRegions({
 	modal: '#modal'
 });
 
+$.ajaxSetup({
+	headers: {'x-auth-token': localStorage.token }
+});
+
+
 Engine.addInitializer(function(options){
 
 	// @TODO: refactor this shity function
@@ -69,6 +74,9 @@ Engine.addInitializer(function(options){
 			model: place
 		});
 		Engine.modal.show(placeModal);
+		placeModal.on('voted', function(place) {
+			deck.updatePlace(place);
+		});
 	});
 
 	map.on('newPlace', function(position) {
@@ -109,11 +117,6 @@ Engine.addInitializer(function(options){
 		window.isAuthorized = function() {
 			return true;
 		}
-
-		$.ajaxSetup({
-			headers: {'x-auth-token': localStorage.token }
-		});
-
 		$.get('/auth/me').then(function(user, statusText, response) {
 			if (response.status != 200) {
 				return;

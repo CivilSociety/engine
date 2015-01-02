@@ -10,7 +10,11 @@ module.exports = Marionette.CompositeView.extend({
 	collection: new Collections.Comments(),
 	childViewContainer: '.comments',
 	events: {
-		'click .share-fb-button': 'shareFb'
+		'click .share-fb-button': 'shareFb',
+		'click .comment-button': 'showCommentForm',
+		'click .save-button': 'saveComment',
+		'click .vote-button': 'vote',
+
 	},
 	templateHelpers: function () {
 		return {
@@ -23,16 +27,20 @@ module.exports = Marionette.CompositeView.extend({
 	initialize: function() {
 		this.collection.fetch({data: {placeId: this.model.get('id')}});
 	},
-	onRender: function() {
-		this.$('.comment-button').on('click', this.showCommentForm.bind(this));
-		this.$('.save-button').on('click', this.saveComment.bind(this));
-	},
 	showCommentForm: function() {
 		if (isAuthorized()) {
 			this.$('.add-comment-form').slideToggle();
 		} else {
 			this.trigger('authWarning');
 		}
+	},
+	vote: function() {
+		var that = this;
+		this.model.vote().then(function(place) {
+			that.model.set('votes', place.votes);
+			that.trigger('voted', place);
+			that.render();
+		});
 	},
 	saveComment: function() {
 		if (!isAuthorized) {

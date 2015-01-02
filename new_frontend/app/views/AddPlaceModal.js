@@ -20,7 +20,7 @@ module.exports = Marionette.ItemView.extend({
 			description: description,
 			latlng: position.lat() + ':' + position.lng()
 		});
-		place.save().done(function(place) {
+		place.save().done(function() {
 			that.trigger('placeCreated', place);
 		});
 		//@TODO: handle errors

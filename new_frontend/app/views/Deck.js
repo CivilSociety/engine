@@ -24,6 +24,10 @@ module.exports = Marionette.CompositeView.extend({
 		this.collection.add(place);
 		this.render();
 	},
+	updatePlace: function(place) {
+		this.collection.findWhere({'id': place.id}).set('votes', place.votes)
+		this.render();
+	},
 	onRender: function() {
 		var that = this;
 

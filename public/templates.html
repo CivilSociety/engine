@@ -36,7 +36,9 @@
 
 </script>
 <script type="template" id="one-comment-template">
-	<%= text %>
+	<div class="text"><%= text %></div>
+	<div class="name"><%= userName %></div>
+	<div class="time"><%= time() %></div>
 	<br style="clear:both">
 </script>
 <script type="template" id="one-place-modal-template">
@@ -58,15 +60,19 @@
 		<button class="save-button">Оставить комментарий</button>
 	</div>
 	<div class="comments"></div>
-	<button>Хорошая идея</button>
-	<button class="share-fb-buton">Расшарить в FB</button>
-	<button class="spam-button">Спам</button>
+	<button class="vote-button <% if (!canVote) { %>disabled-button<% } %>" disabled="<%= !canVote%>">Хорошая идея</button>
+	<button class="share-fb-button">Расшарить в FB</button>
+	<!--button class="spam-button">Спам</button-->
 </script>
 <script type="template" id="one-place-template">
 	<div class="improvement"><%= improvement%></div>
 	<div class="votes"><%= votes%></div>
 	<div class="description"><%= description%></div>
+	<% if (getUser() && getUser().profileUrl) { %>
+	<a href="<%= getUser().profileUrl%>" target="_blank" class="name"><%= name%></a>
+	<% } else { %>
 	<div class="name"><%= name%></div>
+	<% } %>
 	<div class="time"><%= time()%></div>
 	<br style="clear:both">
 </script>

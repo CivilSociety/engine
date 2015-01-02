@@ -1,6 +1,8 @@
 .button,
 .save-button,
-.cancel-button {
+.cancel-button,
+.vote-button,
+.share-fb-button {
   cursor: pointer;
   font-size: 0.9em;
   padding: 10px;
@@ -9,7 +11,9 @@
 }
 .button:hover,
 .save-button:hover,
-.cancel-button:hover {
+.cancel-button:hover,
+.vote-button:hover,
+.share-fb-button:hover {
   outline: 1px solid #000;
 }
 .save-button {
@@ -20,11 +24,27 @@
   background-color: transparent;
   color: #000;
 }
+.vote-button {
+  background-color: #00a2af;
+  color: #fff;
+}
+.share-fb-button {
+  background-color: transparent;
+  color: #000;
+}
+.disabled-button {
+  background-color: #c0c0c0 !important;
+}
 
 .deck {
   background-color: rgba(255,255,255,0.8);
   padding: 20px;
   height: 100%;
+}
+.deck .places {
+  overflow-y: scroll;
+  height: 70%;
+  padding-bottom: 50px;
 }
 .switcher {
   font-size: 24px;
@@ -107,6 +127,25 @@ body {
   width: 100%;
   margin: 10px 0;
   height: 7em;
+}
+
+.oneComment {
+  border-bottom: 2px dotted #757472;
+}
+.oneComment .text {
+  clear: both;
+  color: #757472;
+}
+.oneComment .name {
+  float: left;
+  color: #71868e;
+  font-size: 14px;
+  margin-right: 8px;
+}
+.oneComment .time {
+  float: left;
+  color: #71868e;
+  font-size: 14px;
 }
 
 .onePlaceModal {

@@ -4,7 +4,8 @@ var schema = new mongoose.Schema({
 	text: String,
 	placeId: String,
 	userId: String,
-	userName: String
+	userName: String,
+	date: {type: Date, default: Date.now}
 });
 
 var model = mongoose.model('comment', schema);
