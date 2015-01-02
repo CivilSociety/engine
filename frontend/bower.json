@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/CivilSociety/engine",
   "authors": [
     "Bohdan Chechin <bohdan.chechin@live.com>"
@@ -15,11 +15,9 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "*",
-    "restangular": "~1.4.0",
-    "ngstorage": "~0.3.0",
-    "angular-ui-router": "~0.2.10",
-    "moment": "~2.7.0",
-    "bootstrap": "~3.2.0"
+    "marionette": "~2.2.2",
+    "lodash": "~2.4.1",
+    "require": "*",
+    "moment": "~2.8.3"
   }
 }

@@ -2,6 +2,9 @@ var gulp = require('gulp'),
 	concat = require('gulp-concat'),
 	stylus = require('gulp-stylus'),
 	changed = require('gulp-changed'),
+	browserify = require('browserify'),
+	watchify = require('watchify'),
+	source = require('vinyl-source-stream'),
 	env = process.env.ENV || 'dev';
 
 var JS_DEST = '../public/js/',
@@ -9,24 +12,33 @@ var JS_DEST = '../public/js/',
 	PUBLIC_DEST = '../public/',
 	FONTS_DEST = '../public/fonts/';
 
-gulp.task('scripts.app', function () {
-	return gulp.src('app/**/*.js')
-		.pipe(concat('app.js'))
-		.pipe(gulp.dest(JS_DEST));
-});
-
 gulp.task('scripts.vendor', function () {
 	var source = [
-		'vendor/bootstrap/dist/js/bootstrap.js.min',
-		'vendor/angular/angular.js',
+		'vendor/jquery/dist/jquery.min.js',
 		'vendor/lodash/dist/lodash.js',
-		'vendor/angular-ui-router/release/angular-ui-router.js',
-		'vendor/restangular/dist/restangular.min.js',
-		'vendor/ngstorage/ngStorage.js',
+		'vendor/backbone/backbone.js',
+		'vendor/backbone.babysitter/lib/backbone.babysitter.min.js',
+		'vendor/backbone.wreqr/lib/backbone.wreqr.min.js',
+		'vendor/marionette/lib/backbone.marionette.min.js',
 		'vendor/moment/min/moment.min.js'
 	];
-
+//script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUXIcXT_AhcCZ8BXAcyn0OUfXN1LnRkgw")
 	return gulp.src(source).pipe(concat('vendor.js')).pipe(gulp.dest(JS_DEST));
+});
+
+gulp.task('scripts.maps', function () {
+	var source = [
+		'vendor/marionette/lib/backbone.marionette.map'
+	];
+
+	return gulp.src(source).pipe(gulp.dest(JS_DEST));
+});
+
+gulp.task('browserify', function() {
+	return browserify('./app/app.js')
+	.bundle()
+	.pipe(source('app.js'))
+	.pipe(gulp.dest(JS_DEST));
 });
 
 gulp.task('styles', function () {
@@ -40,8 +52,14 @@ gulp.task('styles', function () {
 		.pipe(gulp.dest(CSS_DEST));
 });
 
-gulp.task('templates.direct', function () {
-	return gulp.src('app/**/*.html').pipe(gulp.dest(PUBLIC_DEST));
+gulp.task('templates', function () {
+	var source = [
+		'app/**/*.html'
+	];
+	return gulp.src(source)
+		.pipe(concat('templates.html'))
+		.pipe(gulp.dest(PUBLIC_DEST));
+
 });
 
 gulp.task('copypublic', function () {
@@ -53,15 +71,15 @@ gulp.task('fonts', function() {
 });
 
 gulp.task('watch', function () {
-	gulp.watch('app/**/*.js', ['scripts.app']);
+	gulp.watch('app/**/*.js', ['browserify']);
 	gulp.watch('styles/**/*.styl', ['styles']);
-	gulp.watch('app/**/*.html', ['templates.direct']);
+	gulp.watch('app/**/*.html', ['templates']);
 });
 
 gulp.task('default', function () {
-	gulp.start('scripts.app', 'copypublic', 'scripts.vendor', 'styles', 'templates.direct', 'fonts', 'watch');
+	gulp.start('browserify', 'copypublic', 'scripts.vendor', 'scripts.maps', 'styles', 'templates', 'fonts', 'watch');
 });
 
 gulp.task('build', function () {
-	gulp.start('scripts.app', 'scripts.vendor', 'styles', 'templates.direct', 'fonts');
+	gulp.start('browserify', 'scripts.vendor', 'scripts.maps', 'styles', 'templates', 'fonts');
 });
