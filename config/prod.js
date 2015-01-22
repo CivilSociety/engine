@@ -1,5 +1,8 @@
 module.exports = {
 	db: {
-		connectionString: 'mongodb://localhost/api'
+		connectionString: process.env.MONGO_CONNECTION
+	},
+	publicConstants: {
+		facebookAppId: process.env.FACEBOOK_APP_ID
 	}
 };
