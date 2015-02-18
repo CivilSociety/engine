@@ -22,7 +22,8 @@ module.exports = Marionette.ItemView.extend({
 	drawMarker: function(place) {
 		var marker = new google.maps.Marker({
 			position: place.getPosition(),
-			map: this.map
+			map: this.map,
+			icon: 'public/images/mark.png'
 		});
 		var that = this;
 		google.maps.event.addListener(marker, 'click', function(e) {
@@ -41,9 +42,11 @@ module.exports = Marionette.ItemView.extend({
 		if (this.newPlace) {
 			this.newPlace.setMap(null);
 		}
+		var img = 'public/images/mark.png';
 		var marker = new google.maps.Marker({
 			position: latlng,
-			map: this.map
+			map: this.map,
+			icon: img
 		});
 		this.newPlace = marker;
 		this.trigger('newPlace', latlng);
