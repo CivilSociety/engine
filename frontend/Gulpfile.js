@@ -10,7 +10,8 @@ var gulp = require('gulp'),
 var JS_DEST = '../public/js/',
 	CSS_DEST = '../public/css/',
 	PUBLIC_DEST = '../public/',
-	FONTS_DEST = '../public/fonts/';
+	FONTS_DEST = '../public/fonts/',
+	IMAGES_DEST = '../public/images/';
 
 gulp.task('scripts.vendor', function () {
 	var source = [
@@ -70,6 +71,10 @@ gulp.task('fonts', function() {
 	return gulp.src('vendor/bootstrap/dist/fonts/*').pipe(gulp.dest(FONTS_DEST));
 });
 
+gulp.task('images', function() {
+	return gulp.src('images/*').pipe(gulp.dest(IMAGES_DEST));
+});
+
 gulp.task('watch', function () {
 	gulp.watch('app/**/*.js', ['browserify']);
 	gulp.watch('styles/**/*.styl', ['styles']);
@@ -77,9 +82,9 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', function () {
-	gulp.start('browserify', 'copypublic', 'scripts.vendor', 'scripts.maps', 'styles', 'templates', 'fonts', 'watch');
+	gulp.start('browserify', 'copypublic', 'scripts.vendor', 'scripts.maps', 'styles', 'templates', 'fonts', 'images', 'watch');
 });
 
 gulp.task('build', function () {
-	gulp.start('browserify', 'scripts.vendor', 'scripts.maps', 'styles', 'templates', 'fonts');
+	gulp.start('browserify', 'scripts.vendor', 'scripts.maps', 'styles', 'templates', 'fonts', 'images');
 });
