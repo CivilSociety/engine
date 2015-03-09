@@ -9,12 +9,12 @@ module.exports = {
 		apiUrl: 'http://localhost:3000/',
 		lon: 36.06863021850586,
 		lat: 52.96766504873649,
-		zoom: 13
+		zoom: 13,
+		vkAppId: process.env.VK_APP_ID
 	},
 	vk: {
-		clientID: '4558998',
-		clientSecret: 'WmwCGKf0RrfMhknFGeWk',
-		callbackURL: 'http://localhost:3000/auth/vkontakte/callback'
+		clientID: process.env.VK_APP_ID,
+		clientSecret: process.env.VK_APP_SECRET
 	},
 	fb: {
 		clientID: '',

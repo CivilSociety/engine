@@ -45,6 +45,14 @@ module.exports = Marionette.CompositeView.extend({
 				}
 			});
 		});
+
+		this.$('#vk-auth').on('click', function() {
+			VK.Auth.login(function(response) {
+				if (response.status === 'connected') {
+					that.trigger('authorized', {source: 'vk', response: response});
+				}
+			}, 'email');
+		});
 		if (isAuthorized()) {
 			if (!this.model.get('id')) {
 				this.model.set(getUser());

@@ -59,6 +59,10 @@
 .switcher .active {
   color: #aba27e;
 }
+.auth-buttons div:hover {
+  cursor: pointer;
+  outline: 1px solid #000;
+}
 
 body {
   font-family: 'PT Sans', sans-serif;

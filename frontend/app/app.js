@@ -139,6 +139,9 @@ Engine.addInitializer(function(options){
 
 document.onready = function() {
 	Engine.start();
+	VK.init({
+		apiId: window.config.vkAppId
+	});
 }
 
 window.fbAsyncInit = function() {

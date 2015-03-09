@@ -140,6 +140,9 @@ Engine.addInitializer(function(options){
 
 document.onready = function() {
 	Engine.start();
+	VK.init({
+		apiId: "4744279"
+	});
 }
 
 window.fbAsyncInit = function() {
@@ -287,6 +290,14 @@ module.exports = Marionette.CompositeView.extend({
 				}
 			});
 		});
+
+		this.$('#vk-auth').on('click', function() {
+			VK.Auth.login(function(response) {
+				if (response.status === 'connected') {
+					that.trigger('authorized', {source: 'vk', response: response});
+				}
+			}, 'email');
+		});
 		if (isAuthorized()) {
 			if (!this.model.get('id')) {
 				this.model.set(getUser());
@@ -325,7 +336,8 @@ module.exports = Marionette.ItemView.extend({
 	drawMarker: function(place) {
 		var marker = new google.maps.Marker({
 			position: place.getPosition(),
-			map: this.map
+			map: this.map,
+			icon: 'public/images/mark.png'
 		});
 		var that = this;
 		google.maps.event.addListener(marker, 'click', function(e) {
@@ -344,9 +356,11 @@ module.exports = Marionette.ItemView.extend({
 		if (this.newPlace) {
 			this.newPlace.setMap(null);
 		}
+		var img = 'public/images/mark.png';
 		var marker = new google.maps.Marker({
 			position: latlng,
-			map: this.map
+			map: this.map,
+			icon: img
 		});
 		this.newPlace = marker;
 		this.trigger('newPlace', latlng);
@@ -357,6 +371,7 @@ module.exports = Marionette.ItemView.extend({
 		this.newPlace = undefined;
 	}
 });
+
 },{"../collections":4}],12:[function(require,module,exports){
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
