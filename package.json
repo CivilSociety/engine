@@ -12,7 +12,7 @@
     "chai": "^1.9.1",
     "cookie-parser": "~1.0.1",
     "debug": "^0.8.1",
-    "express": "~4.0.0",
+    "express": "*",
     "jade": "^1.7.0",
     "lodash": "^2.4.1",
     "mocha": "^1.18.2",
