@@ -18,6 +18,7 @@ var controller = {
 			res.json(places.map(formatPlace));
 		});
 		function formatPlace(place) {
+			if (!place) return {};
 			var data = _.omit(place.toJSON(), 'votedUsers', '__v', '_id');
 			data.canVote = false;
 			data.id = place._id;
