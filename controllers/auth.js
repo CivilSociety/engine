@@ -24,6 +24,7 @@ function me(req, res) {
 }
 
 function auth(req, res, next) {
+	console.log('start auth controller');
 	if (!req.body) {
 		return res.status(400).json({error: 'Wrong request'});
 	}
@@ -54,6 +55,7 @@ function auth(req, res, next) {
 			});
 		});
 	} else if (source === 'vk') {
+		console.log('vk source checked');
 		var response = req.body.response;
 		var sid = response.session.sid;
 		var sig = response.session.sig;
@@ -64,13 +66,17 @@ function auth(req, res, next) {
 			+ "secret=" + response.session.secret
 			+ "sid=" + sid + appSecret;
 		var cryptedCheckString = crypto.createHash('md5').update(checkString).digest("hex");
+		console.log(cryptedCheckString);
+		console.log(sig);
 		if (cryptedCheckString !== sig) {
 			return res.status(401).end('wrong secret');
 		}
 		var vkUser = response.session.user;
 		vkUser.name = vkUser.first_name + ' ' + vkUser.last_name;
+		console.log('look for user');
 		User.findOne({$or: [{vkId: vkUser.id}, {email: vkUser.email}]}, function(err, user) {
 			if (err) {
+				console.log(err);
 				return res.status(500).end('internal error');
 			}
 			if (!user) {
@@ -105,6 +111,7 @@ function auth(req, res, next) {
 		var session = new Session(data);
 		session.save(function(err, data) {
 			if (err) {
+				console.log(err);
 				return res.status(500).end();
 			}
 			var result = session.toJSON();
