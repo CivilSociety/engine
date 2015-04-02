@@ -5,7 +5,16 @@ var helpers = require('../core/helpers');
 var controller = {
 	getAll: function(req, res) {
 		var userId = req.getUser().getData().id;
-		Place.find().sort({created_at: -1}).exec(function(err, places) {
+		var order = req.query.order;
+		var sort = {
+			created_at: -1
+		};
+		if (order === 'votes') {
+			sort = {
+				votes: -1
+			}
+		}
+		Place.find().sort(sort).exec(function(err, places) {
 			res.json(places.map(formatPlace));
 		});
 		function formatPlace(place) {

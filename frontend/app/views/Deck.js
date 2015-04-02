@@ -9,13 +9,21 @@ module.exports = Marionette.CompositeView.extend({
 	collection: new Collections.Places(),
 	childViewContainer: '.places',
 	events: {
-		'click [data-role="logout"]': 'logout'
+		'click [data-role="logout"]': 'logout',
+		'click #sort-new': 'sortNew',
+		'click #sort-popular': 'sortPopular'
 	},
 	logout: function() {
 		var that = this;
 		$.post('/auth/logout').then(function(data, responseText, response) {
 			that.trigger('logout');
 		});
+	},
+	sortNew: function(e) {
+		_.debounce(this.collection.fetch.bind(this.collection), 500)();
+	},
+	sortPopular: function(e) {
+		_.debounce(this.collection.fetch.bind(this.collection, {data: $.param({order: 'votes'})}), 500)();
 	},
 	initialize: function() {
 		this.collection.fetch();
@@ -30,7 +38,6 @@ module.exports = Marionette.CompositeView.extend({
 	},
 	onRender: function() {
 		var that = this;
-
 		this.$('#facebook-auth').on('click', function() {
 			
 			FB.getLoginStatus(function(response) {
