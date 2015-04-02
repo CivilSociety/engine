@@ -65,13 +65,13 @@ function auth(req, res, next) {
 			+ "sid=" + sid + appSecret;
 		var cryptedCheckString = crypto.createHash('md5').update(checkString).digest("hex");
 		if (cryptedCheckString !== sig) {
-			return res.status(500).end();
+			return res.status(401).end('wrong secret');
 		}
 		var vkUser = response.session.user;
 		vkUser.name = vkUser.first_name + ' ' + vkUser.last_name;
 		User.findOne({$or: [{vkId: vkUser.id}, {email: vkUser.email}]}, function(err, user) {
 			if (err) {
-				return res.status(500).end();
+				return res.status(500).end('internal error');
 			}
 			if (!user) {
 				createUser(vkUser, 'vk');
@@ -93,7 +93,7 @@ function auth(req, res, next) {
 		var user = new User(data);
 		user.save(function(err, user) {
 			if (err) {
-				return res.status(500).end();
+				return res.status(500).end('internal error');
 			}
 			authUser(user);
 		});
