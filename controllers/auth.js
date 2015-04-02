@@ -114,7 +114,7 @@ function auth(req, res, next) {
 				console.log(err);
 				return res.status(500).end();
 			}
-			console.log(o)
+			console.log(session)
 			console.log(data);
 			var result = session.toJSON();
 			result.token = data.token;
