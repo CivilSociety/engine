@@ -109,11 +109,13 @@ function auth(req, res, next) {
 		var data = _.pick(user, ['name', 'profileUrl', 'avatar']);
 		data.id = user._id.toString();
 		var session = new Session(data);
-		session.save(function(err, data) {
+		session.save(function(err, o) {
 			if (err) {
 				console.log(err);
 				return res.status(500).end();
 			}
+			console.log(o)
+			console.log(data);
 			var result = session.toJSON();
 			result.token = data.token;
 			res.json(result);
