@@ -20,7 +20,7 @@ module.exports = {
 				return res.json(err);
 			}
 			var result = [];
-			for (var i = 0, l = collection.length; i < l; i++) {	
+			for (var i = 0, l = collection.length; i < l; i++) {
 				result.push(simplifyObject(collection[i]));
 			}
 			return res.json(result);

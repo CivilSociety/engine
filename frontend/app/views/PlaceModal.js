@@ -14,8 +14,7 @@ module.exports = Marionette.CompositeView.extend({
 		'click .share-vk-button': 'shareVk',
 		'click .comment-button': 'showCommentForm',
 		'click .save-button': 'saveComment',
-		'click .vote-button': 'vote',
-
+		'click .vote-button': 'sendVote'
 	},
 	templateHelpers: function () {
 		return {
@@ -35,7 +34,7 @@ module.exports = Marionette.CompositeView.extend({
 			this.trigger('authWarning');
 		}
 	},
-	vote: function() {
+	sendVote () {
 		var that = this;
 		this.model.vote().then(function(place) {
 			that.model.set('votes', place.votes);

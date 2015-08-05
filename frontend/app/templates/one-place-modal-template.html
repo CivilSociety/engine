@@ -17,7 +17,7 @@
 		<button class="save-button">Оставить комментарий</button>
 	</div>
 	<div class="comments"></div>
-	<button class="vote-button <% if (!canVote) { %>disabled-button<% } %>" disabled="<%= !canVote%>">Хорошая идея</button>
+	<button class="vote-button <% if (!canVote) { %>disabled-button<% } %>" <% if (!canVote) { %>disabled="true"<% } %>>Хорошая идея</button>
 	<button class="share-vk-button">Поделиться Вконтакте</button>
 	<!--button class="spam-button">Спам</button-->
 </script>

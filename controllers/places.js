@@ -52,7 +52,7 @@ var controller = {
 	vote: function(req, res) {
 		var id = req.params.id;
 		var userId = req.getUser().getData().id;
-		Place.findByIdAndUpdate(id, { $inc: { votes: 1 }, $push: {votedUsers: userId}}, helpers.simpleObjectResponse(res));
+		Place.findByIdAndUpdate(id, { $inc: { votes: 1 }, $push: {votedUsers: userId}}, {new: true}, helpers.simpleObjectResponse(res));
 	},
 	update: function(req, res) {
 		var id = req.params.id;
