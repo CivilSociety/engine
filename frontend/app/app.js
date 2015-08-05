@@ -137,7 +137,7 @@ Engine.addInitializer(function(options){
 	fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-document.onready = function() {
+document.onready = function() {	
 	Engine.start();
 	VK.init({
 		apiId: window.config.vkAppId
