@@ -71,7 +71,7 @@ function auth(req, res, next) {
 		}
 		var vkUser = response.session.user;
 		vkUser.name = vkUser.first_name + ' ' + vkUser.last_name;
-
+		console.log(vkUser)
 		User.findOne({$or: [{vkId: vkUser.id}, {email: vkUser.email}]}, function(err, user) {
 			if (err) {
 				console.log(err);
