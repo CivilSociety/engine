@@ -39,7 +39,7 @@ module.exports = Marionette.CompositeView.extend({
 	onRender: function() {
 		var that = this;
 		this.$('#facebook-auth').on('click', function() {
-			
+
 			FB.getLoginStatus(function(response) {
 				if (response.status === 'connected') {
 					that.trigger('authorized', {source: 'fb', response: response});
@@ -55,6 +55,7 @@ module.exports = Marionette.CompositeView.extend({
 
 		this.$('#vk-auth').on('click', function() {
 			VK.Auth.login(function(response) {
+				console.log(response)
 				if (response.status === 'connected') {
 					that.trigger('authorized', {source: 'vk', response: response});
 				}

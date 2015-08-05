@@ -328,6 +328,7 @@ module.exports = Marionette.CompositeView.extend({
 
 		this.$('#vk-auth').on('click', function () {
 			VK.Auth.login(function (response) {
+				console.log(response);
 				if (response.status === 'connected') {
 					that.trigger('authorized', { source: 'vk', response: response });
 				}

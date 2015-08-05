@@ -55,6 +55,7 @@ function auth(req, res, next) {
 		});
 	} else if (source === 'vk') {
 		var response = req.body.response;
+		console.log(response)
 		var sid = response.session.sid;
 		var sig = response.session.sig;
 		var clientId = config.vk.clientID;
