@@ -33,6 +33,7 @@ module.exports = Marionette.ItemView.extend({
 	},
 	showPlace: function(view) {
 		var model = view.model;
+		window.location.hash = '/place/' + model.get('id')
 		this.map.setCenter(model.getPosition());
 		this.trigger('showPlaceModal', model);
 	},

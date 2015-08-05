@@ -1,7 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
 var Views = require('./views');
 
-var Engine = new Backbone.Marionette.Application({container: '#app'});
+var Engine = new Backbone.Marionette.Application({ container: '#app' });
 
 Engine.addRegions({
 	map: '#map',
@@ -10,11 +12,10 @@ Engine.addRegions({
 });
 
 $.ajaxSetup({
-	headers: {'x-auth-token': localStorage.token }
+	headers: { 'x-auth-token': localStorage.token }
 });
 
-
-Engine.addInitializer(function(options){
+Engine.addInitializer(function (options) {
 
 	// @TODO: refactor this shity function
 	var map = new Views.Map();
@@ -23,129 +24,129 @@ Engine.addInitializer(function(options){
 	var deck = new Views.Deck();
 	Engine.deck.show(deck);
 
-	Engine.on('authorized', function() {
+	Engine.on('authorized', function () {
 		deck.render();
 	});
 
-	Engine.on('logout', function() {
+	Engine.on('logout', function () {
 		delete localStorage.token;
 
-		window.isAuthorized = function() {
+		window.isAuthorized = function () {
 			return false;
-		}
+		};
 
-		window.getUser = function() {
+		window.getUser = function () {
 			return null;
-		}
+		};
 
 		$.ajaxSetup({
-			headers: {'x-auth-token': null }
+			headers: { 'x-auth-token': null }
 		});
 		deck.render();
 	});
 
 	deck.on('childview:showPlace', map.showPlace.bind(map));
-	deck.on('authorized', function(authObject) {
-		$.post('/auth', authObject).then(function(user, statusText, response) {
+	deck.on('authorized', function (authObject) {
+		$.post('/auth', authObject).then(function (user, statusText, response) {
 			if (response.status != 200) {
 				return;
 			}
 
 			localStorage.token = user.token;
 
-			window.isAuthorized = function() {
+			window.isAuthorized = function () {
 				return true;
-			}
+			};
 
-			window.getUser = function() {
+			window.getUser = function () {
 				return user;
-			}
+			};
 
 			$.ajaxSetup({
-				headers: {'x-auth-token': user.token }
+				headers: { 'x-auth-token': user.token }
 			});
 			deck.render();
 		});
-	})
+	});
 
 	deck.on('logout', Engine.trigger.bind(Engine, 'logout'));
 
-	map.on('showPlaceModal', function(place) {
+	map.on('showPlaceModal', function (place) {
 		var placeModal = new Views.PlaceModal({
 			model: place
 		});
 		Engine.modal.show(placeModal);
-		placeModal.on('voted', function(place) {
+		placeModal.on('voted', function (place) {
 			deck.updatePlace(place);
 		});
 	});
 
-	map.on('newPlace', function(position) {
+	map.on('newPlace', function (position) {
 		var addPlaceModal = new Views.AddPlaceModal({
 			position: position
 		});
 		Engine.modal.show(addPlaceModal);
-		addPlaceModal.on('cancel', function() {
+		addPlaceModal.on('cancel', function () {
 			addPlaceModal.destroy();
 			$('#modal-container').hide();
 		});
-		addPlaceModal.on('placeCreated', function(place) {
+		addPlaceModal.on('placeCreated', function (place) {
 			deck.addPlace(place);
 			map.drawMarker(place);
 			addPlaceModal.destroy();
 			$('#modal-container').hide();
 		});
-		addPlaceModal.on('authWarning', function() {
+		addPlaceModal.on('authWarning', function () {
 			alert('Auth please');
 		});
 	});
 
-	Engine.modal.on('before:show', function() {
+	Engine.modal.on('before:show', function () {
 		$('#modal-container').show();
 	});
 
-
-	$('#modal-container').on('click', function(e) {
+	$('#modal-container').on('click', function (e) {
 		if (e.target.id !== "modal-container") return;
 		$('#modal-container').hide();
 		map.clearNewPlace();
 	});
 });
 
-Engine.addInitializer(function(options){
+Engine.addInitializer(function (options) {
 	Backbone.history.start();
 	if (localStorage.token) {
-		window.isAuthorized = function() {
+		window.isAuthorized = function () {
 			return true;
-		}
-		$.get('/auth/me').then(function(user, statusText, response) {
+		};
+		$.get('/auth/me').then(function (user, statusText, response) {
 			if (response.status != 200) {
 				return;
 			}
-			window.getUser = function() {
+			window.getUser = function () {
 				return user;
-			}
+			};
 			Engine.trigger('authorized');
 		});
 	}
 });
 
-(function(d, s, id) {
-	var js, fjs = d.getElementsByTagName(s)[0];
+(function (d, s, id) {
+	var js,
+	    fjs = d.getElementsByTagName(s)[0];
 	if (d.getElementById(id)) return;
-	js = d.createElement(s); js.id = id;
+	js = d.createElement(s);js.id = id;
 	js.src = "//connect.facebook.net/en_US/sdk.js";
 	fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+})(document, 'script', 'facebook-jssdk');
 
-document.onready = function() {
+document.onready = function () {
 	Engine.start();
 	VK.init({
 		apiId: window.config.vkAppId
 	});
-}
+};
 
-window.fbAsyncInit = function() {
+window.fbAsyncInit = function () {
 	FB.init({
 		appId: window.config.facebookAppId,
 		cookie: true,
@@ -153,50 +154,68 @@ window.fbAsyncInit = function() {
 		version: 'v2.1'
 	});
 };
+
 },{"./views":15}],2:[function(require,module,exports){
+'use strict';
+
 var Models = require('../models');
 
 module.exports = Backbone.Collection.extend({
 	model: Models.Comment,
 	url: '/comments',
-	comparator: function(comment) {
-		return -(new Date(comment.get('date'))).valueOf();
+	comparator: function comparator(comment) {
+		return -new Date(comment.get('date')).valueOf();
 	}
 });
+
 },{"../models":8}],3:[function(require,module,exports){
+'use strict';
+
 var Models = require('../models');
 
 module.exports = Backbone.Collection.extend({
 	model: Models.Place,
 	url: '/places'
 });
+
 },{"../models":8}],4:[function(require,module,exports){
+'use strict';
+
 module.exports = {
 	Places: require('./Places.js'),
 	Comments: require('./Comments.js')
-}
+};
+
 },{"./Comments.js":2,"./Places.js":3}],5:[function(require,module,exports){
+'use strict';
+
 module.exports = Backbone.Model.extend({
 	url: '/comments'
 });
+
 },{}],6:[function(require,module,exports){
+'use strict';
+
 module.exports = Backbone.Model.extend({
 	url: '/places',
-	vote: function() {
+	vote: function vote() {
 		return $.when($.ajax({
 			url: '/places/' + this.id + '/vote',
 			method: 'PUT'
 		}));
 	},
-	getPosition: function() {
+	getPosition: function getPosition() {
 		var position = this.get('latlng').split(':');
 		return new google.maps.LatLng(position[0], position[1]);
 	}
 });
+
 },{}],7:[function(require,module,exports){
+'use strict';
+
 module.exports = Backbone.Model.extend({
 	url: '/users',
-	auth: function(email, password) {
+	auth: function auth(email, password) {
 		var url = '/auth';
 		return $.when($.post({
 			url: url,
@@ -207,13 +226,19 @@ module.exports = Backbone.Model.extend({
 		}));
 	}
 });
+
 },{}],8:[function(require,module,exports){
+'use strict';
+
 module.exports = {
 	Place: require('./Place.js'),
 	User: require('./User.js'),
 	Comment: require('./Comment.js')
-}
+};
+
 },{"./Comment.js":5,"./Place.js":6,"./User.js":7}],9:[function(require,module,exports){
+'use strict';
+
 var Place = require('../models/Place');
 
 module.exports = Marionette.ItemView.extend({
@@ -226,7 +251,7 @@ module.exports = Marionette.ItemView.extend({
 	events: {
 		'click .save-button': 'savePlace'
 	},
-	savePlace: function() {
+	savePlace: function savePlace() {
 		var that = this;
 		var improvement = this.$('[data-value="name"]').val();
 		var description = this.$('[data-value="description"]').val();
@@ -236,13 +261,16 @@ module.exports = Marionette.ItemView.extend({
 			description: description,
 			latlng: position.lat() + ':' + position.lng()
 		});
-		place.save().done(function() {
+		place.save().done(function () {
 			that.trigger('placeCreated', place);
 		});
 		//@TODO: handle errors
 	}
 });
+
 },{"../models/Place":6}],10:[function(require,module,exports){
+'use strict';
+
 var Models = require('../models');
 var Collections = require('../collections');
 var OnePlace = require('./OnePlace');
@@ -258,50 +286,50 @@ module.exports = Marionette.CompositeView.extend({
 		'click #sort-new': 'sortNew',
 		'click #sort-popular': 'sortPopular'
 	},
-	logout: function() {
+	logout: function logout() {
 		var that = this;
-		$.post('/auth/logout').then(function(data, responseText, response) {
+		$.post('/auth/logout').then(function (data, responseText, response) {
 			that.trigger('logout');
 		});
 	},
-	sortNew: function(e) {
+	sortNew: function sortNew(e) {
 		_.debounce(this.collection.fetch.bind(this.collection), 500)();
 	},
-	sortPopular: function(e) {
-		_.debounce(this.collection.fetch.bind(this.collection, {data: $.param({order: 'votes'})}), 500)();
+	sortPopular: function sortPopular(e) {
+		_.debounce(this.collection.fetch.bind(this.collection, { data: $.param({ order: 'votes' }) }), 500)();
 	},
-	initialize: function() {
+	initialize: function initialize() {
 		this.collection.fetch();
 	},
-	addPlace: function(place) {
+	addPlace: function addPlace(place) {
 		this.collection.add(place);
 		this.render();
 	},
-	updatePlace: function(place) {
-		this.collection.findWhere({'id': place.id}).set('votes', place.votes)
+	updatePlace: function updatePlace(place) {
+		this.collection.findWhere({ 'id': place.id }).set('votes', place.votes);
 		this.render();
 	},
-	onRender: function() {
+	onRender: function onRender() {
 		var that = this;
-		this.$('#facebook-auth').on('click', function() {
-			
-			FB.getLoginStatus(function(response) {
+		this.$('#facebook-auth').on('click', function () {
+
+			FB.getLoginStatus(function (response) {
 				if (response.status === 'connected') {
-					that.trigger('authorized', {source: 'fb', response: response});
+					that.trigger('authorized', { source: 'fb', response: response });
 				} else {
-					FB.login(function(response){
+					FB.login(function (response) {
 						if (response.status === 'connected') {
-							that.trigger('authorized', {source: 'fb', response: response});
+							that.trigger('authorized', { source: 'fb', response: response });
 						}
 					});
 				}
 			});
 		});
 
-		this.$('#vk-auth').on('click', function() {
-			VK.Auth.login(function(response) {
+		this.$('#vk-auth').on('click', function () {
+			VK.Auth.login(function (response) {
 				if (response.status === 'connected') {
-					that.trigger('authorized', {source: 'vk', response: response});
+					that.trigger('authorized', { source: 'vk', response: response });
 				}
 			}, 'email');
 		});
@@ -318,7 +346,10 @@ module.exports = Marionette.CompositeView.extend({
 	}
 
 });
+
 },{"../collections":4,"../models":8,"./OnePlace":13}],11:[function(require,module,exports){
+'use strict';
+
 var Collections = require('../collections');
 
 module.exports = Marionette.ItemView.extend({
@@ -326,9 +357,9 @@ module.exports = Marionette.ItemView.extend({
 	className: 'mapContainer',
 	template: '#map-template',
 	newPlace: undefined,
-	onRender: function() {
+	onRender: function onRender() {
 		var mapOptions = {
-			center: { lat: window.config.lat, lng: window.config.lon},
+			center: { lat: window.config.lat, lng: window.config.lon },
 			zoom: window.config.zoom,
 			disableDefaultUI: true
 		};
@@ -337,27 +368,28 @@ module.exports = Marionette.ItemView.extend({
 		this.places = new Collections.Places();
 		this.places.fetch().then(this.showMarkers.bind(this));
 	},
-	showMarkers: function() {
+	showMarkers: function showMarkers() {
 		this.places.each(this.drawMarker.bind(this));
 	},
-	drawMarker: function(place) {
+	drawMarker: function drawMarker(place) {
 		var marker = new google.maps.Marker({
 			position: place.getPosition(),
 			map: this.map,
 			icon: 'public/images/mark.png'
 		});
 		var that = this;
-		google.maps.event.addListener(marker, 'click', function(e) {
+		google.maps.event.addListener(marker, 'click', function (e) {
 			that.map.setCenter(marker.getPosition());
 			that.trigger('showPlaceModal', place);
 		});
 	},
-	showPlace: function(view) {
+	showPlace: function showPlace(view) {
 		var model = view.model;
+		window.location.hash = '/place/' + model.get('id');
 		this.map.setCenter(model.getPosition());
 		this.trigger('showPlaceModal', model);
 	},
-	mapClicked: function(e) {
+	mapClicked: function mapClicked(e) {
 		var latlng = e.latLng;
 		this.map.setCenter(latlng);
 		if (this.newPlace) {
@@ -372,7 +404,7 @@ module.exports = Marionette.ItemView.extend({
 		this.newPlace = marker;
 		this.trigger('newPlace', latlng);
 	},
-	clearNewPlace: function() {
+	clearNewPlace: function clearNewPlace() {
 		if (!this.newPlace) return;
 		this.newPlace.setMap(null);
 		this.newPlace = undefined;
@@ -380,20 +412,25 @@ module.exports = Marionette.ItemView.extend({
 });
 
 },{"../collections":4}],12:[function(require,module,exports){
+'use strict';
+
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#one-comment-template',
 	className: 'oneComment',
-	templateHelpers: function () {
+	templateHelpers: function templateHelpers() {
 		return {
 			isAuthorized: isAuthorized,
-			time: function(){
+			time: function time() {
 				return moment(this.date).format('DD.MM.YYYY');
 			}
-		}
+		};
 	}
 });
+
 },{}],13:[function(require,module,exports){
+'use strict';
+
 module.exports = Marionette.ItemView.extend({
 	tagName: 'div',
 	template: '#one-place-template',
@@ -401,15 +438,18 @@ module.exports = Marionette.ItemView.extend({
 	triggers: {
 		'click': 'showPlace'
 	},
-	templateHelpers: function () {
+	templateHelpers: function templateHelpers() {
 		return {
-			time: function(){
+			time: function time() {
 				return moment(this.created_at).format('DD.MM.YYYY');
 			}
-		}
+		};
 	}
 });
+
 },{}],14:[function(require,module,exports){
+'use strict';
+
 var Models = require('../models');
 var Collections = require('../collections');
 var OneComment = require('./OneComment');
@@ -423,38 +463,39 @@ module.exports = Marionette.CompositeView.extend({
 	childViewContainer: '.comments',
 	events: {
 		'click .share-fb-button': 'shareFb',
+		'click .share-vk-button': 'shareVk',
 		'click .comment-button': 'showCommentForm',
 		'click .save-button': 'saveComment',
-		'click .vote-button': 'vote',
+		'click .vote-button': 'vote'
 
 	},
-	templateHelpers: function () {
+	templateHelpers: function templateHelpers() {
 		return {
 			isAuthorized: isAuthorized,
-			time: function(){
+			time: function time() {
 				return moment(this.created_at).format('DD.MM.YYYY');
 			}
-		}
+		};
 	},
-	initialize: function() {
-		this.collection.fetch({data: {placeId: this.model.get('id')}});
+	initialize: function initialize() {
+		this.collection.fetch({ data: { placeId: this.model.get('id') } });
 	},
-	showCommentForm: function() {
+	showCommentForm: function showCommentForm() {
 		if (isAuthorized()) {
 			this.$('.add-comment-form').slideToggle();
 		} else {
 			this.trigger('authWarning');
 		}
 	},
-	vote: function() {
+	vote: function vote() {
 		var that = this;
-		this.model.vote().then(function(place) {
+		this.model.vote().then(function (place) {
 			that.model.set('votes', place.votes);
 			that.trigger('voted', place);
 			that.render();
 		});
 	},
-	saveComment: function() {
+	saveComment: function saveComment() {
 		if (!isAuthorized) {
 			return this.trigger('authWarning');
 		}
@@ -468,25 +509,35 @@ module.exports = Marionette.CompositeView.extend({
 		});
 		comment.save().done(this.commentAdded.bind(this));
 	},
-	commentAdded: function(comment, textResponse) {
+	commentAdded: function commentAdded(comment, textResponse) {
 		this.collection.add(comment);
 		this.render();
 	},
-	shareFb: function() {				
-		FB.ui(
-		{
+	shareVk: function shareVk() {
+		var url = undefined;
+		url = 'http://vkontakte.ru/share.php?';
+		url += 'url=' + encodeURIComponent(location.href);
+		url += '&noparse=true';
+		window.open(url, '', 'toolbar=0,status=0,width=626,height=436');
+	},
+	shareFb: function shareFb() {
+		FB.ui({
 			method: 'share',
 			href: location.href + '#placeId=' + this.model.get('id')
-		}, function(response){
+		}, function (response) {
 			// @TODO: do something here
 		});
 	}
 });
+
 },{"../collections":4,"../models":8,"./OneComment":12}],15:[function(require,module,exports){
+'use strict';
+
 module.exports = {
 	Map: require('./Map.js'),
 	Deck: require('./Deck.js'),
 	PlaceModal: require('./PlaceModal.js'),
 	AddPlaceModal: require('./AddPlaceModal.js')
-}
+};
+
 },{"./AddPlaceModal.js":9,"./Deck.js":10,"./Map.js":11,"./PlaceModal.js":14}]},{},[1]);

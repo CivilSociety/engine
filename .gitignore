@@ -1,9 +1,6 @@
-# misc
-.vagrant
-Vagrantfile
+node_modules
+frontend/node_modules
 .DS_Store
 .idea
 Thumbs.db
 npm-debug.log
-node_modules
-new_frontend/vendor

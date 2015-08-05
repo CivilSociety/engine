@@ -11,6 +11,7 @@ module.exports = Marionette.CompositeView.extend({
 	childViewContainer: '.comments',
 	events: {
 		'click .share-fb-button': 'shareFb',
+		'click .share-vk-button': 'shareVk',
 		'click .comment-button': 'showCommentForm',
 		'click .save-button': 'saveComment',
 		'click .vote-button': 'vote',
@@ -42,7 +43,7 @@ module.exports = Marionette.CompositeView.extend({
 			that.render();
 		});
 	},
-	saveComment: function() {
+	saveComment () {
 		if (!isAuthorized) {
 			return this.trigger('authWarning');
 		}
@@ -60,7 +61,14 @@ module.exports = Marionette.CompositeView.extend({
 		this.collection.add(comment);
 		this.render();
 	},
-	shareFb: function() {				
+	shareVk () {
+		let url
+		url  = 'http://vkontakte.ru/share.php?'
+		url += 'url=' + encodeURIComponent(location.href)
+		url += '&noparse=true';
+		window.open(url,'','toolbar=0,status=0,width=626,height=436')
+	},
+	shareFb: function() {
 		FB.ui(
 		{
 			method: 'share',

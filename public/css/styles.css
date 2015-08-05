@@ -2,7 +2,8 @@
 .save-button,
 .cancel-button,
 .vote-button,
-.share-fb-button {
+.share-fb-button,
+.share-vk-button {
   cursor: pointer;
   font-size: 0.9em;
   padding: 10px;
@@ -13,7 +14,8 @@
 .save-button:hover,
 .cancel-button:hover,
 .vote-button:hover,
-.share-fb-button:hover {
+.share-fb-button:hover,
+.share-vk-button:hover {
   outline: 1px solid #000;
 }
 .save-button {
@@ -29,6 +31,10 @@
   color: #fff;
 }
 .share-fb-button {
+  background-color: transparent;
+  color: #000;
+}
+.share-vk-button {
   background-color: transparent;
   color: #000;
 }

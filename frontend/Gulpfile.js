@@ -4,6 +4,7 @@ var gulp = require('gulp'),
 	changed = require('gulp-changed'),
 	browserify = require('browserify'),
 	watchify = require('watchify'),
+	babelify = require('babelify'),
 	source = require('vinyl-source-stream'),
 	env = process.env.ENV || 'dev';
 
@@ -37,6 +38,7 @@ gulp.task('scripts.maps', function () {
 
 gulp.task('browserify', function() {
 	return browserify('./app/app.js')
+	.transform(babelify)
 	.bundle()
 	.pipe(source('app.js'))
 	.pipe(gulp.dest(JS_DEST));
