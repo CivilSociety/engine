@@ -73,7 +73,7 @@ function auth(req, res, next) {
 		vkUser.name = vkUser.first_name + ' ' + vkUser.last_name;
 		console.log('get from vk')
 		console.log(vkUser)
-		User.findOne({$or: [{vkId: vkUser.id}, {email: vkUser.email}]}, function(err, user) {
+		User.findOne({vkId: vkUser.id}, function(err, user) {
 			if (err) {
 				console.log(err);
 				return res.status(500).end('internal error');
