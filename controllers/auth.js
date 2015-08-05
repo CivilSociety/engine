@@ -55,7 +55,7 @@ function auth(req, res, next) {
 		});
 	} else if (source === 'vk') {
 		var response = req.body.response;
-		console.log(response)
+
 		var sid = response.session.sid;
 		var sig = response.session.sig;
 		var clientId = config.vk.clientID;
@@ -71,12 +71,13 @@ function auth(req, res, next) {
 		}
 		var vkUser = response.session.user;
 		vkUser.name = vkUser.first_name + ' ' + vkUser.last_name;
-		console.log(vkUser)
+
 		User.findOne({$or: [{vkId: vkUser.id}, {email: vkUser.email}]}, function(err, user) {
 			if (err) {
 				console.log(err);
 				return res.status(500).end('internal error');
 			}
+			console.log(user)
 			if (!user) {
 				createUser(vkUser, 'vk');
 			} else {
@@ -95,10 +96,13 @@ function auth(req, res, next) {
 			data.facebookId = data.id;
 		}
 		var user = new User(data);
+		console.log('create')
+
 		user.save(function(err, user) {
 			if (err) {
 				return res.status(500).end('internal error');
 			}
+			console.log(user)
 			authUser(user);
 		});
 	}
@@ -106,6 +110,8 @@ function auth(req, res, next) {
 	function authUser(user) {
 		var data = _.pick(user, ['name', 'profileUrl', 'avatar']);
 		data.id = user._id.toString();
+		console.log('auth')
+		console.log(data)
 		var session = new Session(data);
 		session.save(function(err) {
 			if (err) {
