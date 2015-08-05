@@ -48,7 +48,7 @@
   height: 100%;
 }
 .deck .places {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 70%;
   padding-bottom: 50px;
 }
