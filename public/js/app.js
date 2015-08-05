@@ -517,6 +517,8 @@ module.exports = Marionette.CompositeView.extend({
 		var url = undefined;
 		url = 'http://vkontakte.ru/share.php?';
 		url += 'url=' + encodeURIComponent(location.href);
+		url += '&title=' + encodeURIComponent(this.model.get('improvement'));
+		url += '&description=' + encodeURIComponent(this.model.get('description'));
 		url += '&noparse=true';
 		window.open(url, '', 'toolbar=0,status=0,width=626,height=436');
 	},
