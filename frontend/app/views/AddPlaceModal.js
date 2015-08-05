@@ -18,6 +18,7 @@ module.exports = Marionette.ItemView.extend({
 		var place = new Place({
 			improvement: improvement,
 			description: description,
+			canVote: true,
 			latlng: position.lat() + ':' + position.lng()
 		});
 		place.save().done(function() {
